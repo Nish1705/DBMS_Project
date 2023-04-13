@@ -96,7 +96,7 @@
             <td>{{row[2]}}</td>
             <td>{{row[3]}}</td>
             <td>{{row[4]}}</td>
-            <td>{{"*"*10}}</td>
+            <td>{{row[5]}}</td>
             <td>
               <a href="{{url_for('recipients')}}" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.0}}">Edit</a>
               <a href="/delete/{{row[4]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
@@ -146,13 +146,24 @@
             <div class="modal-body">
               <form action="{{ url_for('insert')}}" method="POST">
                 <div class="form-group">
-                  <label>Full Name</label>
+                  <label>Complete Name</label>
                   <input
                     type="text"
                     name="name"
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Full Name"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Address</label>
+                  <input
+                    type="text"
+                    name="address"
+                    class="form-control"
+                    id="exampleFormControlInput1"
+                    placeholder="Enter Address"
                   />
                 </div>
 
@@ -168,16 +179,38 @@
                 </div>
 
                 <div class="form-group">
-                  <label>Phone Number</label>
+                  <label>Contact Number</label>
                   <input
-                    name="phone"
-                    type="text"
+                    name="phnumber"
+                    type="number"
                     class="form-control"
                     id="exampleFormControlInput1"
-                    placeholder="Enter Phone Number"
+                    placeholder="Enter Contact Number"
                   />
                 </div>
 
+                <div class="form-group">
+                  <label>Username</label>
+                  <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    id="exampleFormControlInput1"
+                    placeholder="Enter UserName"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    name="pswd"
+                    class="form-control"
+                    id="exampleFormControlInput1"
+                    placeholder="Enter Password"
+                  />
+                </div>
+                <hr>
                 <button type="submit" class="btn btn-primary mb-2">Save</button>
               </form>
             </div>
