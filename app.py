@@ -71,9 +71,39 @@ def signin():
 # def backtoreg():
 #     return redirect(url_for('signup'))
 
-@app.route('/insert')
+@app.route('/insert', methods = ['POST'])
 def insert():
-    return 'hello'
+    if request.method == "POST":
+        name       = request.form['name']
+        address       = request.form['address']
+        email          = request.form['email']
+        contact       = request.form['phnumber']
+        contact_f = (contact,)
+        username       = request.form['username']
+        password       = request.form['pswd']
+        cur = mysql.connection.cursor()
+        cur.execute("create database if not exists `user`")
+        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+        cur.execute("select username from recipients")
+        x = cur.fetchall()
+        flag=False
+        
+        for i in x:
+            if(i[0]==username):
+                flag=True
+            else:
+                continue
+        if(flag==False):
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact_f,username,password))
+        else:
+            flash("Username Taken Try something else")
+            # return redirect(url_for('register'))
+        mysql.connection.commit()
+        cur.close()
+        
+    return redirect(url_for('recipients'))
+
+
 
 @app.route('/loginRes', methods=['POST'])
 def login():
