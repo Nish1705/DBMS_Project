@@ -37,7 +37,7 @@ def registration():
     flag=False
     
     for i in x:
-        if(i[0]==username):
+        if(str(i[0]).lower()==username.lower()):
             flag=True
         else:
             continue
@@ -64,15 +64,11 @@ def signup():
 
 @app.route('/signin')
 def signin():
-    
+    return render_template('login.html')
 
-# @app.route('/registerRes')
-# def backtoreg():
-#     return redirect(url_for('signup'))
 
 
 @app.route('/loginRes', methods=['POST'])
-
 def login():
     username       = request.form['user']
     password       = request.form['pswd']
@@ -88,7 +84,7 @@ def login():
         return "Login Successful"
     else:
         return "Login Failed"
-
+    
     # cur.execute("INSERT INTO `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
     # mysql.connection.commit()
