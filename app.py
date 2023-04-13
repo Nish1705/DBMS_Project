@@ -1,4 +1,4 @@
-from flask import Flask,request,redirect,url_for, render_template
+from flask import Flask,request,redirect,url_for, render_template,flash
 from flask_mysqldb import MySQL
 
 
@@ -29,16 +29,24 @@ def registration():
 
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
-    cur.execute("select * from recipients;")
+    cur.execute("select username from recipients;")
     x = cur.fetchall()
-    a = int(len(x))+ 1
-    cur.execute("INSERT INTO `recipients` (srno,name,address,email,contact,username, password) VALUES (%s,%s, %s, %s,%s, %s, %s)",(a,name,address,email,contact,username,password))
-
+    flag=0
+    
+    for i in x:
+        if(i[0]==username):
+            flag=1
+        else:
+            continue
+    if(flag==0):
+        cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+    else:
+        return flash("Username Taken Try something else",category=Warning)
     mysql.connection.commit()
     cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    return "Registration Successful"
+    return redirect(url_for('register'))
 
 
 @app.route('/')
@@ -66,10 +74,15 @@ def login():
     cur.execute(sql, (username,))
     record = cur.fetchall()
     cur.close()
+
+    if(password==record[0][0]):
+        return "Login Successful"
+    else:
+        return "Login Failed"
     
 
 
-    return render_template("test.html", record = record)
+    
 
 
 
