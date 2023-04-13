@@ -29,11 +29,12 @@ def registration():
 
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
-    cur.execute("select * from recipients;")
-    x = cur.fetchall()
-    a = int(len(x))+ 1
-    cur.execute("INSERT INTO `recipients` (srno,name,address,email,contact,username, password) VALUES (%s,%s, %s, %s,%s, %s, %s)",(a,name,address,email,contact,username,password))
-
+    cur.execute("create database if not exists `user`")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    # cur.execute("select * from recipients;")
+    # x = cur.fetchall()
+    # a = int(len(x))+ 1
+    cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
     mysql.connection.commit()
     cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
@@ -61,7 +62,6 @@ def login():
     password       = request.form['pswd']
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
-
     sql = "SELECT password from recipients where username = %s"
     cur.execute(sql, (username,))
     record = cur.fetchall()
