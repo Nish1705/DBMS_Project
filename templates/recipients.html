@@ -12,7 +12,7 @@
       /* Styling for the page */
       body {
         font-family: Arial, sans-serif;
-        background-color: #9e1e1e;
+        background-color: #e8e5e5;
         margin: 0;
         padding: 0;
 
@@ -22,13 +22,14 @@
         width: 100%;
         margin: 0 auto;
         padding: 100px;
-        
+        padding-top: 50px;
         margin: 50px;
-        margin-right: 200px;
-        margin-top: 10px;
+        margin-right: 268px;
+        margin-bottom: 200px;
+        margin-top: 0px;
         background-color: #fff;
         border-radius: 5px;
-        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow:  30px 20px 10px rgba(0, 0, 0, 0.1);
         /* min-width: 100%; */
         align-self: center;
       }
@@ -56,6 +57,10 @@
       tr:hover {
         background-color: #f5f5f5;
       }
+      button{
+        box-shadow: ;
+      }
+
     </style>
   </head>
   <body>
@@ -70,6 +75,7 @@
             <th>Contact Number</th>
             <th>Username</th>
             <th>Password</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -81,7 +87,11 @@
             <td>{{row[2]}}</td>
             <td>{{row[3]}}</td>
             <td>{{row[4]}}</td>
-            <td>{{row[5]}}</td>
+            <td>{{"*"*10}}</td>
+            <td>
+              <a href="/update/{{row[3]}}" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.0}}">Edit</a>
+              <a href="/delete/{{ row.0 }}" onclick="return confirm('Are Sure Want To Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
+            </td>
           </tr>
           {% endfor %}
           
