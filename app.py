@@ -67,6 +67,12 @@ def signin():
     return render_template('login.html')
 
 
+# @app.route('/registerRes')
+# def backtoreg():
+#     return redirect(url_for('signup'))
+@app.route('/insert')
+def insert():
+    return 'hello'
 
 @app.route('/loginRes', methods=['POST'])
 def login():
