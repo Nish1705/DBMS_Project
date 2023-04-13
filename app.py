@@ -35,7 +35,7 @@ def registration():
     cur.execute("INSERT INTO `recipients` (srno,name,address,email,contact,username, password) VALUES (%s,%s, %s, %s,%s, %s, %s)",(a,name,address,email,contact,username,password))
 
     mysql.connection.commit()
-
+    cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
     return "Registration Successful"
@@ -49,27 +49,38 @@ def index():
 def signup():
     return render_template('TestFrontend.html')
 
-@app.route('/registerRes')
-def backtoreg():
-    return redirect(url_for('signup'))
+# @app.route('/registerRes')
+# def backtoreg():
+#     return redirect(url_for('signup'))
 
 
-@app.route('/registerRes', methods=['POST', 'GET'])
+@app.route('/loginRes', methods=['POST'])
 
 def login():
     username       = request.form['user']
-    email          = request.form['email']
     password       = request.form['pswd']
-
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    mysql.connection.commit()
+    sql = "SELECT password from recipients where username = %s"
+    cur.execute(sql, (username,))
+    record = cur.fetchall()
+    cur.close()
+    
 
-    # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    return "Registration Successful"
+    return render_template("test.html", record = record)
+
+
+
+
+    # cur.execute("INSERT INTO `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
+
+    # mysql.connection.commit()
+
+    # # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
+
+    # return "Registration Successful"
 
 @app.route('/recipients', methods=['POST', 'GET'])
 def recipients():
@@ -79,6 +90,7 @@ def recipients():
     cur.close()
 
     return render_template('recipients.html',record=record)
+
 
 
 
