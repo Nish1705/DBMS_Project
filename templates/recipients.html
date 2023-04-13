@@ -60,6 +60,7 @@
       /* button{
         box-shadow: ;
       } */
+
     </style>
   </head>
   <body>
@@ -97,19 +98,8 @@
             <td>{{row[4]}}</td>
             <td>{{"*"*10}}</td>
             <td>
-              <a
-                href="/update/{{row[3]}}"
-                class="btn btn-warning btn-sm"
-                data-toggle="modal"
-                data-target="#modaledit{{row.0}}"
-                >Edit</a
-              >
-              <a
-                href="/delete/{{ row.0 }}"
-                onclick="return confirm('Are Sure Want To Deleted ?')"
-                class="btn btn-danger btn-sm"
-                >Delete</a
-              >
+              <a href="{{url_for('recipients')}}" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.0}}">Edit</a>
+              <a href="/delete/{{row[4]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
             </td>
           </tr>
           {% endfor %}

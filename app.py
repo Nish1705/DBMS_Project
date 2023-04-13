@@ -1,4 +1,4 @@
-from flask import Flask,request,redirect,url_for, render_template,flash
+from flask import Flask,request,redirect,url_for, render_template,flash,session
 from flask_mysqldb import MySQL
 
 
@@ -10,7 +10,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] ='user'
-
+app.config['SECRET_KEY']='mykey'
 mysql = MySQL(app=app)
 # hello
 
@@ -31,15 +31,27 @@ def registration():
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-    # cur.execute("select * from recipients;")
-    # x = cur.fetchall()
-    # a = int(len(x))+ 1
-    cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+
+    cur.execute("select username from recipients;")
+    x = cur.fetchall()
+    flag=False
+    
+    for i in x:
+        if(i[0]==username):
+            flag=True
+        else:
+            continue
+    if(flag==False):
+        cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+    else:
+        flash("Username Taken Try something else")
+        # return redirect(url_for('register'))
     mysql.connection.commit()
     cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    return "Registration Successful"
+    return render_template('register.html',name=name,username="",email=email,contact=contact,address=address,flag=flag)
+
 
 
 @app.route('/')
@@ -48,7 +60,11 @@ def index():
 
 @app.route('/signup')
 def signup():
-    return render_template('TestFrontend.html')
+    return render_template('register.html')
+
+@app.route('/signin')
+def signin():
+    
 
 # @app.route('/registerRes')
 # def backtoreg():
@@ -64,17 +80,16 @@ def login():
     password       = request.form['pswd']
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
+
     sql = "SELECT password from recipients where username = %s"
     cur.execute(sql, (username,))
     record = cur.fetchall()
     cur.close()
-    
 
-
-    return render_template("test.html", record = record)
-
-
-
+    if(password==record[0][0]):
+        return "Login Successful"
+    else:
+        return "Login Failed"
 
     # cur.execute("INSERT INTO `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
@@ -82,7 +97,6 @@ def login():
 
     # # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    # return "Registration Successful"
 
 @app.route('/recipients', methods=['POST', 'GET'])
 def recipients():
@@ -93,6 +107,16 @@ def recipients():
 
     return render_template('recipients.html',record=record)
 
+@app.route('/delete/<string:username_data>', methods=['GET'])
+def delete(username_data):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("delete from recipients where username=%s",(username_data,))
+    mysql.connection.commit()
+    cur.close()
+
+    return redirect(url_for('recipients'))
 
 
 
