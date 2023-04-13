@@ -30,7 +30,7 @@ def registration():
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
-    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
 
     cur.execute("select username from recipients;")
     x = cur.fetchall()
@@ -70,6 +70,7 @@ def signin():
 # @app.route('/registerRes')
 # def backtoreg():
 #     return redirect(url_for('signup'))
+
 @app.route('/insert')
 def insert():
     return 'hello'
@@ -117,10 +118,6 @@ def delete(username_data):
     cur.close()
 
     return redirect(url_for('recipients'))
-
-
-
-
 
 
 
