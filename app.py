@@ -1,4 +1,4 @@
-from flask import Flask,request,redirect,url_for, render_template
+from flask import Flask,request,redirect,url_for, render_template,flash
 from flask_mysqldb import MySQL
 
 
@@ -53,7 +53,9 @@ def signup():
 # @app.route('/registerRes')
 # def backtoreg():
 #     return redirect(url_for('signup'))
-
+@app.route('/insert')
+def insert():
+    return 'hello'
 
 @app.route('/loginRes', methods=['POST'])
 
