@@ -30,7 +30,7 @@ def registration():
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
-    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
 
     cur.execute("select username from recipients;")
     x = cur.fetchall()
@@ -79,24 +79,24 @@ def insert():
         name       = request.form['name']
         address       = request.form['address']
         email          = request.form['email']
-        contact       = request.form['phnumber']
-        contact_f = (contact,)
+        contact       = int(request.form['phnumber'])
         username       = request.form['username']
         password       = request.form['pswd']
         cur = mysql.connection.cursor()
         cur.execute("create database if not exists `user`")
-        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(20) not null, `contact` int(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+        
         cur.execute("select username from recipients")
         x = cur.fetchall()
         flag=False
         
         for i in x:
-            if(i[0]==username):
+            if(str(i[0]).lower()==username.lower()):
                 flag=True
             else:
                 continue
         if(flag==False):
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact_f,username,password))
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -104,6 +104,23 @@ def insert():
         cur.close()
         
     return redirect(url_for('recipients'))
+
+@app.route('/edit', methods= ['POST','GET'])
+def edit():
+    if request.method == 'POST':
+        username = request.form['id']
+        name = request.form['name']
+        email = request.form['email']
+        contact = request.form['contact']
+        address = request.form['address']
+
+        cur = mysql.connection.cursor()
+        cur.execute("update recipients set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('recipients'))
+
 
 
 
@@ -113,18 +130,27 @@ def login():
     password       = request.form['pswd']
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
 
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+     
     sql = "SELECT password from recipients where username = %s"
     cur.execute(sql, (username,))
     record = cur.fetchall()
-    cur.close()
-
+    if(len(record)==0):
+        flash("User doesn't exist!\nPlease enter Correct Username")
+        return redirect(url_for('signin'))
     if(password==record[0][0]):
-        return "Login Successful"
-    else:
-        return "Login Failed"
     
-    # cur.execute("INSERT INTO `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
+        cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
+        cur.execute("INSERT INTO `logs` VALUES (%s, %s);",(username,password))
+
+        flash("Successfully Logged in")
+        return  redirect(url_for('index'))
+
+    else:
+        flash("Login Failed! Access Denied.")
+        return redirect(url_for('signin'))
 
     # mysql.connection.commit()
 
@@ -134,6 +160,10 @@ def login():
 @app.route('/recipients', methods=['POST', 'GET'])
 def recipients():
     cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
+
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+
     cur.execute("select * from recipients")
     record = cur.fetchall()
     cur.close()
@@ -163,10 +193,6 @@ def donors():
     return render_template('donors.html')
 
 '''Donor section ends'''
-
-
-
-
 
 
 

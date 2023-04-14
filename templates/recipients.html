@@ -98,14 +98,67 @@
             <td>{{row[4]}}</td>
             <td>{{row[5]}}</td>
             <td>
-              <a href="{{url_for('recipients')}}" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.0}}">Edit</a>
+              <a href="/edit/{{row[4]}}"  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row[4]}}">Edit</a>
               <a href="/delete/{{row[4]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
             </td>
           </tr>
+          <!-- Enter New Student Modal -->
+        <div id="modaledit{{row[4]}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+       
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary" style="align-content: center;">Update Recipient Details</h5>    
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      
+    
+                    <div class="modal-body">
+                        
+                        <form action="{{ url_for('edit')}}" method="POST">
+                            <input type="hidden" name="id" value="{{row[4]}}">
+                            <div class="form-group">
+                              <label>Complete Name</label>
+                              <input value="{{row[0]}}" type="text" name="name" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Name">
+                            </div>
+
+                            <div class="form-group">
+                              <label>Complete Address</label>
+                              <input value="{{row[1]}}" type="text" name="address" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Address">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input value="{{row[2]}}" type="text" name="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter Email">
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input value="{{row[3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number">
+                              </div>
+
+
+                            <hr>
+                              <button type="submit" class="btn btn-success mb-2">Update</button>
+                         
+                          </form>
+    
+    
+                    </div>
+                </div>
+            </div>
+    
+        </div>
+    
+    
+        <!-- End of Edit Student Modal -->
           {% endfor %}
         </tbody>
       </table>
     </div>
+
 
     {%with messages = get_flashed_messages()%} {%if messages%} {% for message
       in messages %}
