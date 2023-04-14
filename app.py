@@ -24,25 +24,39 @@ def registration():
     address       = request.form['address']
     email          = request.form['email']
     contact       = request.form['contact']
+    type       = request.form['type']
     username       = request.form['username']
     password       = request.form['pswd']
 
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
-    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-
-    cur.execute("select username from recipients;")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("select username from recipients")
     x = cur.fetchall()
     flag=False
-    
     for i in x:
         if(str(i[0]).lower()==username.lower()):
             flag=True
         else:
             continue
+    cur.execute("select username from donors")
+    y = cur.fetchall()
+    
+    for i in y:
+        if(str(i[0]).lower()==username.lower()):
+            flag=True
+        else:
+            continue
+
     if(flag==False):
-        cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+        if (type.lower() == 'recipient'):
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+        elif (type.lower() == 'donor'):
+            cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+        else:
+            flash("Please Enter Correct Type of User(Donor or Recipient)")
     else:
         flash("Username Taken Try something else")
         # return redirect(url_for('register'))
@@ -50,7 +64,7 @@ def registration():
     cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    return render_template('register.html',name=name,username="",email=email,contact=contact,address=address,flag=flag)
+    return render_template('register.html',name=name,username="",email=email,contact=contact,type = type,address=address,flag=flag)
 
 
 
@@ -80,11 +94,12 @@ def insert():
         address       = request.form['address']
         email          = request.form['email']
         contact       = int(request.form['phnumber'])
+        type = 'Recipient'
         username       = request.form['username']
         password       = request.form['pswd']
         cur = mysql.connection.cursor()
         cur.execute("create database if not exists `user`")
-        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null,`username` varchar(20) primary key, `password` varchar(20) not null)")
         
         cur.execute("select username from recipients")
         x = cur.fetchall()
@@ -96,7 +111,7 @@ def insert():
             else:
                 continue
         if(flag==False):
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))

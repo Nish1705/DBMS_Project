@@ -82,6 +82,7 @@
             <th>Complete Address</th>
             <th>Email</th>
             <th>Contact Number</th>
+            <th>Type</th>
             <th>Username</th>
             <th>Password</th>
             <th>Action</th>
@@ -97,13 +98,14 @@
             <td>{{row[3]}}</td>
             <td>{{row[4]}}</td>
             <td>{{row[5]}}</td>
+            <td>{{row[6]}}</td>
             <td>
-              <a href="/edit/{{row[4]}}"  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row[4]}}">Edit</a>
-              <a href="/delete/{{row[4]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
+              <a href="/edit/{{row[5]}}"  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row[5]}}">Edit</a>
+              <a href="/delete/{{row[5]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
             </td>
           </tr>
-          <!-- Enter New Student Modal -->
-        <div id="modaledit{{row[4]}}" class="modal fade" role="dialog">
+        <!-- Edit Recipient Modal -->
+        <div id="modaledit{{row[5]}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
        
@@ -118,7 +120,7 @@
                     <div class="modal-body">
                         
                         <form action="{{ url_for('edit')}}" method="POST">
-                            <input type="hidden" name="id" value="{{row[4]}}">
+                            <input type="hidden" name="id" value="{{row[5]}}">
                             <div class="form-group">
                               <label>Complete Name</label>
                               <input value="{{row[0]}}" type="text" name="name" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Name">
@@ -131,7 +133,7 @@
     
                             <div class="form-group">
                                 <label>Email</label>
-                                <input value="{{row[2]}}" type="text" name="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter Email">
+                                <input value="{{row[2]}}" type="email" name="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter Email">
                             </div>
     
                             <div class="form-group">
@@ -154,6 +156,7 @@
     
     
         <!-- End of Edit Student Modal -->
+
           {% endfor %}
         </tbody>
       </table>
@@ -175,7 +178,7 @@
       </div>
       {%endfor%} {%endif%} {%endwith%}
 
-      <!-- Enter New Student Modal -->
+      <!-- Enter New Recipient Modal -->
       <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -223,7 +226,7 @@
                 <div class="form-group">
                   <label>Email</label>
                   <input
-                    type="text"
+                    type="email"
                     name="email"
                     class="form-control"
                     id="exampleFormControlInput1"
@@ -271,7 +274,7 @@
         </div>
       </div>
 
-      <!-- End of Enter New Student Modal -->
+      <!-- End of Enter New Recipient Modal -->
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
