@@ -32,17 +32,28 @@ def registration():
     cur.execute("create database if not exists `user`")
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
 
-    cur.execute("select username from recipients;")
+    cur.execute("select username,email from recipients;")
     x = cur.fetchall()
     flag=False
-    
+    sameemail=False
     for i in x:
-        if(str(i[0]).lower()==username.lower()):
+        if(str(i[0]).lower()==username.lower() ):
             flag=True
         else:
             continue
+    for i in x:
+        if(str(i[2]).lower()==email.lower() ):
+            sameemail=True
+        else:
+            continue
+ 
     if(flag==False):
-        cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+        if(sameemail):
+            flash("Use another Email! Email already in use")
+
+        else:
+
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
     else:
         flash("Username Taken Try something else")
         # return redirect(url_for('register'))
@@ -53,8 +64,11 @@ def registration():
     return render_template('register.html',name=name,username="",email=email,contact=contact,address=address,flag=flag)
 
 
-
 @app.route('/')
+def home():
+    return render_template('Landing.html')
+
+@app.route('/admin')
 def index():
     return render_template('index.html')
 
@@ -84,7 +98,7 @@ def insert():
         cur.execute("create database if not exists `user`")
         cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
         
-        cur.execute("select username from recipients")
+        cur.execute("select username,email from recipients")
         x = cur.fetchall()
         flag=False
         
@@ -93,8 +107,21 @@ def insert():
                 flag=True
             else:
                 continue
+
+
+        sameemail=False
+
+        for i in x:
+            if(str(i[1]).lower()==email.lower() ):
+                sameemail=True
+            else:
+                continue
         if(flag==False):
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+            if(sameemail):
+                flash("Enter another email as this email is already taken.")
+            else:
+
+                cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -158,6 +185,7 @@ def login():
 @app.route('/recipients', methods=['POST', 'GET'])
 def recipients():
     cur = mysql.connection.cursor()
+
     cur.execute("create database if not exists `user`")
 
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
