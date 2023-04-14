@@ -66,13 +66,13 @@
   <body>
     <div class="container">
       <h1>
-        Recipients
+        Donors
         <button
           class="btn btn-primary float-right"
           data-toggle="modal"
           data-target="#myModal"
         >
-          Add Recipient
+          Add Donors
         </button>
       </h1>
       <table>
@@ -100,17 +100,17 @@
             <td>{{row[5]}}</td>
             <td>{{row[6]}}</td>
             <td>
-              <a href="/edit/{{row[5]}}"  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row[5]}}">Edit</a>
-              <a href="/delete/{{row[5]}}" onclick="return confirm('Are Sure Want this recipient To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
+              <a href="/editdonors/{{row[5]}}"  class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row[5]}}">Edit</a>
+              <a href="/deletedonors/{{row[5]}}" onclick="return confirm('Are Sure Want this Donor To be Deleted ?')" class="btn btn-danger btn-sm">Delete</a>
             </td>
           </tr>
-        <!-- Edit Recipient Modal -->
+        <!-- Edit Donors Modal -->
         <div id="modaledit{{row[5]}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
        
                     <div class="modal-header">
-                        <h5 class="modal-title text-primary" style="align-content: center;">Update Recipient Details</h5>    
+                        <h5 class="modal-title text-primary" style="align-content: center;">Update Donor Details</h5>    
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
@@ -119,16 +119,16 @@
     
                     <div class="modal-body">
                         
-                        <form action="{{ url_for('edit')}}" method="POST">
+                        <form action="{{ url_for('editdonors')}}" method="POST">
                             <input type="hidden" name="id" value="{{row[5]}}">
                             <div class="form-group">
                               <label>Complete Name</label>
-                              <input value="{{row[0]}}" type="text" name="name" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Name" required>
+                              <input value="{{row[0]}}" type="text" name="name" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Name">
                             </div>
 
                             <div class="form-group">
                               <label>Complete Address</label>
-                              <input value="{{row[1]}}" type="text" name="address" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Address" required>
+                              <input value="{{row[1]}}" type="text" name="address" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Address">
                             </div>
     
                             <div class="form-group">
@@ -138,7 +138,7 @@
     
                             <div class="form-group">
                                 <label>Contact Number</label>
-                                <input value="{{row[3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number" required>
+                                <input value="{{row[3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number">
                               </div>
 
 
@@ -155,7 +155,7 @@
         </div>
     
     
-        <!-- End of Edit Student Modal -->
+        <!-- End of Edit Donors Modal -->
 
           {% endfor %}
         </tbody>
@@ -178,7 +178,7 @@
       </div>
       {%endfor%} {%endif%} {%endwith%}
 
-      <!-- Enter New Recipient Modal -->
+      <!-- Enter New Donor Modal -->
       <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -187,7 +187,7 @@
                 class="modal-title text-primary"
                 style="align-content: center"
               >
-                Add New Recipient
+                Add New Donor
               </h5>
               <button
                 type="button"
@@ -200,7 +200,7 @@
             </div>
 
             <div class="modal-body">
-              <form action="{{ url_for('insert')}}" method="POST">
+              <form action="{{ url_for('insertdonor')}}" method="POST">
                 <div class="form-group">
                   <label>Complete Name</label>
                   <input
@@ -209,8 +209,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Full Name"
-                    required
-
                   />
                 </div>
 
@@ -222,8 +220,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Address"
-                    required
-
                   />
                 </div>
 
@@ -235,7 +231,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Email"
-                    required
                   />
                 </div>
 
@@ -247,7 +242,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Contact Number"
-                    required
                   />
                 </div>
 
@@ -259,7 +253,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter UserName"
-                    required
                   />
                 </div>
 
@@ -271,8 +264,6 @@
                     class="form-control"
                     id="exampleFormControlInput1"
                     placeholder="Enter Password"
-                    required
-
                   />
                 </div>
                 <hr>
@@ -283,7 +274,7 @@
         </div>
       </div>
 
-      <!-- End of Enter New Recipient Modal -->
+      <!-- End of Enter New Donors Modal -->
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>

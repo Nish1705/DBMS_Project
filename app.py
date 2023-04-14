@@ -24,23 +24,33 @@ def registration():
     address       = request.form['address']
     email          = request.form['email']
     contact       = request.form['contact']
+    type       = request.form['type']
     username       = request.form['username']
     password       = request.form['pswd']
 
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
+<<<<<<< HEAD
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
 
     cur.execute("select username,email from recipients;")
     x = cur.fetchall()
     flag=False
     sameemail=False
+=======
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("select username from recipients")
+    x = cur.fetchall()
+    flag=False
+>>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
     for i in x:
         if(str(i[0]).lower()==username.lower() ):
             flag=True
         else:
             continue
+<<<<<<< HEAD
     for i in x:
         if(str(i[2]).lower()==email.lower() ):
             sameemail=True
@@ -54,6 +64,24 @@ def registration():
         else:
 
             cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+=======
+    cur.execute("select username from donors")
+    y = cur.fetchall()
+    
+    for i in y:
+        if(str(i[0]).lower()==username.lower()):
+            flag=True
+        else:
+            continue
+
+    if(flag==False):
+        if (type.lower() == 'recipient'):
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+        elif (type.lower() == 'donor'):
+            cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+        else:
+            flash("Please Enter Correct Type of User(Donor or Recipient)")
+>>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
     else:
         flash("Username Taken Try something else")
         # return redirect(url_for('register'))
@@ -61,7 +89,7 @@ def registration():
     cur.close()
     # cur.execute("SELECT * `test1` (Username, Password, Email) VALUES (%s, %s, %s);",(username,password,email))
 
-    return render_template('register.html',name=name,username="",email=email,contact=contact,address=address,flag=flag)
+    return render_template('register.html',name=name,username="",email=email,contact=contact,type = type,address=address,flag=flag)
 
 
 @app.route('/')
@@ -85,6 +113,8 @@ def signin():
 # def backtoreg():
 #     return redirect(url_for('signup'))
 
+'''Recipients Section starts'''
+
 @app.route('/insert', methods = ['POST'])
 def insert():
     if request.method == "POST":
@@ -92,11 +122,12 @@ def insert():
         address       = request.form['address']
         email          = request.form['email']
         contact       = int(request.form['phnumber'])
+        type = 'Recipient'
         username       = request.form['username']
         password       = request.form['pswd']
         cur = mysql.connection.cursor()
         cur.execute("create database if not exists `user`")
-        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+        cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null,`username` varchar(20) primary key, `password` varchar(20) not null)")
         
         cur.execute("select username,email from recipients")
         x = cur.fetchall()
@@ -107,6 +138,7 @@ def insert():
                 flag=True
             else:
                 continue
+<<<<<<< HEAD
 
 
         sameemail=False
@@ -122,6 +154,18 @@ def insert():
             else:
 
                 cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
+=======
+        cur.execute("select username from donors")
+        y = cur.fetchall()
+    
+        for i in y:
+            if(str(i[0]).lower()==username.lower()):
+                flag=True
+            else:
+                continue
+        if(flag==False):
+            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
+>>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -146,6 +190,23 @@ def edit():
 
         return redirect(url_for('recipients'))
 
+
+
+# @app.route('/edit', methods= ['POST','GET'])
+# def edit():
+#     if request.method == 'POST':
+#         username = request.form['id']
+#         name = request.form['name']
+#         email = request.form['email']
+#         contact = request.form['contact']
+#         address = request.form['address']
+
+#         cur = mysql.connection.cursor()
+#         cur.execute("update recipients set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
+#         mysql.connection.commit()
+#         cur.close()
+
+#         return redirect(url_for('recipients'))
 
 
 
@@ -196,6 +257,7 @@ def recipients():
 
     return render_template('recipients.html',record=record)
 
+
 @app.route('/delete/<string:username_data>', methods=['GET'])
 def delete(username_data):
 
@@ -209,6 +271,104 @@ def delete(username_data):
 
 
 
+'''Recipient section ends'''
+
+
+
+'''Donor section starts'''
+
+
+@app.route('/insertdonor', methods = ['POST'])
+def insertdonor():
+    if request.method == "POST":
+        name       = request.form['name']
+        address       = request.form['address']
+        email          = request.form['email']
+        contact       = int(request.form['phnumber'])
+        type =          'Donor'
+        username       = request.form['username']
+        password       = request.form['pswd']
+        cur = mysql.connection.cursor()
+        cur.execute("create database if not exists `user`")
+        cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null,`username` varchar(20) primary key, `password` varchar(20) not null)")
+        
+        cur.execute("select username from donors")
+        x = cur.fetchall()
+        flag=False
+        
+        for i in x:
+            if(str(i[0]).lower()==username.lower()):
+                flag=True
+            else:
+                continue
+
+        cur.execute("select username from recipients")
+
+        y = cur.fetchall()
+        
+        for i in y:
+            if(str(i[0]).lower()==username.lower()):
+                flag=True
+            else:
+                continue
+
+
+
+        if(flag==False):
+            cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
+        else:
+            flash("Username Taken Try something else")
+            # return redirect(url_for('register'))
+        mysql.connection.commit()
+        cur.close()
+        
+    return redirect(url_for('donors'))
+
+
+
+@app.route('/deletedonors/<string:username_data>', methods=['GET'])
+def deletedonors(username_data):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("delete from donors where username=%s",(username_data,))
+    mysql.connection.commit()
+    cur.close()
+
+    return redirect(url_for('donors'))
+
+@app.route('/donors', methods = ['POST', 'GET'])
+def donors():
+    cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
+
+    cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+
+    cur.execute("select * from donors")
+    record = cur.fetchall()
+    cur.close()
+
+    return render_template('donors.html',record=record)
+
+
+@app.route('/editdonors', methods= ['POST','GET'])
+def editdonors():
+    if request.method == 'POST':
+        username = request.form['id']
+        name = request.form['name']
+        email = request.form['email']
+        contact = request.form['contact']
+        address = request.form['address']
+
+        cur = mysql.connection.cursor()
+        cur.execute("update donors set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('donors'))
+
+
+'''Donor section ends'''
 
 
 
