@@ -128,7 +128,10 @@ def login():
     password       = request.form['pswd']
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
 
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+     
     sql = "SELECT password from recipients where username = %s"
     cur.execute(sql, (username,))
     record = cur.fetchall()
@@ -155,6 +158,10 @@ def login():
 @app.route('/recipients', methods=['POST', 'GET'])
 def recipients():
     cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
+
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+
     cur.execute("select * from recipients")
     record = cur.fetchall()
     cur.close()
