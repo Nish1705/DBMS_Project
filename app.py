@@ -71,6 +71,8 @@ def signin():
 # def backtoreg():
 #     return redirect(url_for('signup'))
 
+'''Recipients Section starts'''
+
 @app.route('/insert', methods = ['POST'])
 def insert():
     if request.method == "POST":
@@ -180,7 +182,17 @@ def delete(username_data):
     return redirect(url_for('recipients'))
 
 
+'''Recipient section ends'''
 
+
+
+'''Donor section starts'''
+
+@app.route('/donors')
+def donors():
+    return render_template('donors.html')
+
+'''Donor section ends'''
 
 
 
