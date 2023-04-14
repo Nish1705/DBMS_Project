@@ -1,0 +1,85 @@
+{% extends 'index.html' %} {% block main %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Donors | Admin Dashboard</title>
+    <style>
+      /* Styling for the page */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #e8e5e5;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        margin: 0 auto;
+        padding: 90px;
+        padding-top: 50px;
+        margin: 60px;
+        margin-right: 268px;
+        margin-bottom: 200px;
+        margin-top: 10px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 30px 20px 10px rgba(0, 0, 0, 0.1);
+        /* min-width: 100%; */
+        align-self: center;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Donors</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Complete Address</th>
+            <th>Email</th>
+            <th>Contact Number</th>
+            <th>Username</th>
+            <th>Password</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Jane Doe</td>
+            <td>123 Main St<br />Anytown, USA 12345</td>
+            <td>janedoe@example.com</td>
+            <td>555-555-1212</td>
+            <td>janedoe</td>
+            <td>********</td>
+            
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+
+{% endblock %}
