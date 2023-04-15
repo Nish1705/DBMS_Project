@@ -31,42 +31,31 @@ def registration():
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
-<<<<<<< HEAD
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
 
     cur.execute("select username,email from recipients;")
     x = cur.fetchall()
     flag=False
     sameemail=False
-=======
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-    cur.execute("select username from recipients")
+    cur.execute("select username,email from recipients")
     x = cur.fetchall()
+    cur.execute("select username,email from donors")
+    y = cur.fetchall()
     flag=False
->>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
+    sameemail=False
     for i in x:
-        if(str(i[0]).lower()==username.lower() ):
+        if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
             flag=True
         else:
             continue
-<<<<<<< HEAD
-    for i in x:
-        if(str(i[2]).lower()==email.lower() ):
+    for i in y:
+        if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
             sameemail=True
         else:
             continue
  
-    if(flag==False):
-        if(sameemail):
-            flash("Use another Email! Email already in use")
-
-        else:
-
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
-=======
-    cur.execute("select username from donors")
-    y = cur.fetchall()
     
     for i in y:
         if(str(i[0]).lower()==username.lower()):
@@ -75,13 +64,17 @@ def registration():
             continue
 
     if(flag==False):
-        if (type.lower() == 'recipient'):
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
-        elif (type.lower() == 'donor'):
-            cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+        if(sameemail):
+            flash("You have already an existing account by this email! ")
+            flash("Try logging in or use another email to register! ")
         else:
-            flash("Please Enter Correct Type of User(Donor or Recipient)")
->>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
+
+            if (type.lower() == 'recipient'):
+                cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+            elif (type.lower() == 'donor'):
+                cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s,%s, %s, %s, %s)",(name,address,email,contact, type, username,password))
+            else:
+                flash("Please Enter Correct Type of User(Donor or Recipient)")
     else:
         flash("Username Taken Try something else")
         # return redirect(url_for('register'))
@@ -94,6 +87,13 @@ def registration():
 
 @app.route('/')
 def home():
+    cur = mysql.connection.cursor()
+    cur.execute("create database if not exists `user`")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
+
+    cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+
     return render_template('Landing.html')
 
 @app.route('/admin')
@@ -131,41 +131,38 @@ def insert():
         
         cur.execute("select username,email from recipients")
         x = cur.fetchall()
+        cur.execute("select username,email from donors")
+        y = cur.fetchall()
+
+
         flag=False
-        
-        for i in x:
-            if(str(i[0]).lower()==username.lower()):
-                flag=True
-            else:
-                continue
-<<<<<<< HEAD
-
-
         sameemail=False
 
+        # Username duplication Prevention
         for i in x:
-            if(str(i[1]).lower()==email.lower() ):
-                sameemail=True
+            if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
+                flag=True
+                break
             else:
                 continue
+        
+        if(flag==False):
+            for i in y:
+                if(str(i[0]).lower()==username.lower() or  str(i[1]).lower()==email.lower()):
+                    flag=True
+                    break
+                else:
+                    continue
+
+
+
+
         if(flag==False):
             if(sameemail):
-                flash("Enter another email as this email is already taken.")
-            else:
-
-                cur.execute("INSERT INTO `recipients` (name,address,email,contact,username, password) VALUES (%s, %s, %s,%s, %s, %s)",(name,address,email,contact,username,password))
-=======
-        cur.execute("select username from donors")
-        y = cur.fetchall()
-    
-        for i in y:
-            if(str(i[0]).lower()==username.lower()):
-                flag=True
-            else:
-                continue
-        if(flag==False):
-            cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
->>>>>>> 94d02bcbb7e1c073fabf7aa07d63f5bf1c298674
+                flash("You have already an existing account by this email! ")
+                flash("Try logging in or use another email! ")
+            else:    
+                cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -292,30 +289,36 @@ def insertdonor():
         cur.execute("create database if not exists `user`")
         cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null,`username` varchar(20) primary key, `password` varchar(20) not null)")
         
-        cur.execute("select username from donors")
+        cur.execute("select username,email from donors")
         x = cur.fetchall()
-        flag=False
-        
-        for i in x:
-            if(str(i[0]).lower()==username.lower()):
-                flag=True
-            else:
-                continue
-
-        cur.execute("select username from recipients")
+        cur.execute("select username,email from recipients")
 
         y = cur.fetchall()
         
-        for i in y:
-            if(str(i[0]).lower()==username.lower()):
+        flag=False
+        sameemail=False
+        for i in x:
+            if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
                 flag=True
+                break
             else:
                 continue
 
-
+        if(flag==False):
+            for i in y:
+                if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
+                    flag=True
+                    break
+                else:
+                    continue
 
         if(flag==False):
-            cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
+            if(sameemail):
+                flash("You have already an existing account by this email! ")
+                flash("Try logging in or use another email! ")
+            else:
+
+                cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -369,8 +372,6 @@ def editdonors():
 
 
 '''Donor section ends'''
-
-
 
 
 if __name__ == '__main__':
