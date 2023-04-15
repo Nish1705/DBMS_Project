@@ -227,15 +227,12 @@ def login():
     password       = request.form['pswd']
     # TODO: save the registration data to a database
     cur = mysql.connection.cursor()
-    cur.execute("create database if not exists `user`")
-
-    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
      
-    sql = "SELECT password from recipients where username = %s"
-
+    sql = "SELECT password,type from all_users where username = %s"
+    
     cur.execute(sql, (username,))
-    record = cur.fetchall()
 
+    record = cur.fetchall()
 
     if(len(record)==0 ):
 
@@ -244,14 +241,20 @@ def login():
     
     
     if(password==record[0][0]):
-    
+            
         cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
         cur.execute("INSERT INTO `logs` VALUES (%s, %s);",(username,password))
 
-        flash("Successfully Logged in")
-        return  redirect(url_for('index'))
+        if(record[0][1]=='Recipient'):
+            flash("Successfully Logged in")
+            return  "redirect('/recipientdash/%s',(username))"
+        else:
+            flash("Successfully Logged in")
 
-    else:
+            return  redirect(url_for('donordash',username=username))
+            
+    
+    elif(password != record[0][0]):
         flash("Login Failed! Access Denied.")
         return redirect(url_for('signin'))
 
@@ -415,9 +418,9 @@ def add_donations():
 
     return render_template('add_donations.html')
 
-@app.route('/donor/dash')
-def donorsdash():
-    return render_template('donorsdash.html')
+@app.route('/donordash/<string:username>')
+def donordash(username):
+    return render_template('donordash.html',username=username)
 
 
 '''Donation section ends'''
