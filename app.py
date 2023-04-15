@@ -374,5 +374,18 @@ def editdonors():
 '''Donor section ends'''
 
 
+'''Donation section begins'''
+
+@app.route('/donations')
+def donations():
+    return render_template('donations.html')
+
+
+
+
+
+
+'''Donation section ends'''
+
 if __name__ == '__main__':
     app.run(debug = True)

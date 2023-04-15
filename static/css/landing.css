@@ -9,6 +9,7 @@
 
 body{
   overflow: hidden;
+  
 }
 
 header{
@@ -50,6 +51,7 @@ header ul li a:hover{
 
 .container{
   display: flex;
+  min-height: 100vh;
 }
 
 .content{
