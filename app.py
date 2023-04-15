@@ -119,6 +119,27 @@ def home():
                         END;'''
     cur.execute(sql_recipient)
     mysql.connection.commit()
+    
+
+    sql_before_delete = '''CREATE TRIGGER if not exists delete_donor_trigger
+                            BEFORE DELETE ON donors
+                            FOR EACH ROW 
+                            BEGIN
+                            DELETE FROM all_users WHERE username = OLD.username;
+                            END;'''
+    cur.execute(sql_before_delete)
+
+    mysql.connection.commit()
+    sql_after_delete = '''CREATE TRIGGER if not exists delete_recipient_trigger
+                            AFTER DELETE ON recipients
+                            FOR EACH ROW 
+                            BEGIN
+                            DELETE FROM all_users WHERE username = OLD.username;
+                            END;'''
+    
+    
+    cur.execute(sql_after_delete)
+    mysql.connection.commit()
     cur.close()
     return render_template('Landing.html')
 
