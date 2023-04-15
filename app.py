@@ -97,8 +97,28 @@ def home():
     cur.execute("create database if not exists `user`")
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
-
+    cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null unique, `email` varchar(30), `type` varchar(30))")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    sql = '''CREATE TRIGGER if not exists add_user_after_insertdonors
+                AFTER INSERT ON donors
+                FOR EACH ROW
+                BEGIN
+                    INSERT INTO all_users (username, password,email,type)
+                    VALUES (NEW.username, NEW.password, NEW.email, 'Donor');
+                END;'''
+    cur.execute(sql)
+    mysql.connection.commit()
+    cur.close()
+    cur = mysql.connection.cursor()
+    sql_recipient = '''CREATE TRIGGER if not exists add_user_after_insertrecipients
+                        AFTER INSERT ON recipients
+                        FOR EACH ROW
+                        BEGIN
+                            INSERT INTO all_users (username, password,email,type)
+                            VALUES (NEW.username, NEW.password, NEW.email, 'Recipient');
+                        END;'''
+    cur.execute(sql_recipient)
+    mysql.connection.commit()
     cur.close()
     return render_template('Landing.html')
 
