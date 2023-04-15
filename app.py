@@ -212,11 +212,17 @@ def login():
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
      
     sql = "SELECT password from recipients where username = %s"
+
     cur.execute(sql, (username,))
     record = cur.fetchall()
-    if(len(record)==0):
+
+
+    if(len(record)==0 ):
+
         flash("User doesn't exist!\nPlease enter Correct Username")
         return redirect(url_for('signin'))
+    
+    
     if(password==record[0][0]):
     
         cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
@@ -267,7 +273,6 @@ def delete(username_data):
 
 
 '''Donor section starts'''
-
 
 @app.route('/insertdonor', methods = ['POST'])
 def insertdonor():
@@ -322,6 +327,7 @@ def insertdonor():
             else:
 
                 cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
+                
         else:
             flash("Username Taken Try something else")
             # return redirect(url_for('register'))
@@ -386,8 +392,13 @@ def donations():
 
 @app.route('/add_donation')
 def add_donations():
-    
+
     return render_template('add_donations.html')
+
+@app.route('/donor/dash')
+def donorsdash():
+    return render_template('donorsdash.html')
+
 
 '''Donation section ends'''
 
