@@ -96,7 +96,7 @@ def home():
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-    cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `logs` (`username` varchar(20) , `password` varchar(20) not null, `type` varchar(30))")
     cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null unique, `email` varchar(30), `type` varchar(30))")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     sql = '''CREATE TRIGGER if not exists add_user_after_insertdonors
@@ -134,7 +134,7 @@ def home():
                             AFTER DELETE ON recipients
                             FOR EACH ROW 
                             BEGIN
-                            DELETE FROM all_users WHERE username = OLD.username;
+                                DELETE FROM all_users WHERE username = OLD.username;
                             END;'''
     
     
@@ -210,8 +210,7 @@ def insert():
                 continue
         if(flag==False):
             if(sameemail):
-                flash("You have already an existing account by this email! ")
-                flash("Try logging in or use another email! ")
+                flash("You have already an existing account by this email! Try logging in or use another email!")
             else:    
                 cur.execute("INSERT INTO `recipients` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
         else:
@@ -257,23 +256,24 @@ def login():
 
     if(len(record)==0 ):
 
-        flash("User doesn't exist!\nPlease enter Correct Username")
+        flash("User doesn't exist!  Please enter Correct Username")
         return redirect(url_for('signin'))
     
     
     if(password==record[0][0]):
             
-        cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
-        cur.execute("INSERT INTO `logs` VALUES (%s, %s);",(username,password))
+        cur.execute("INSERT INTO `logs`(username,password,type) VALUES (%s, %s,%s)",(username,password,record[0][1]))
+        mysql.connection.commit()
+        cur.close()
 
         if(record[0][1]=='Recipient'):
-            flash("Successfully Logged in")
-            return  "redirect('/recipientdash/%s',(username))"
+            flash("Successfully Logged in !!🤯")
+            return  redirect(url_for('recipientdash',username=username))
+        
         else:
-            flash("Successfully Logged in")
-
+            flash("Successfully Logged in !!🤯")
             return  redirect(url_for('donordash',username=username))
-            
+
     
     elif(password != record[0][0]):
         flash("Login Failed! Access Denied.")
@@ -309,6 +309,14 @@ def delete(username_data):
     cur.close()
 
     return redirect(url_for('recipients'))
+
+
+@app.route('/recipientdash/<string:username>')
+def recipientdash(username):
+    return render_template('recipientdash.html',username=username)
+
+
+
 
 
 
@@ -445,6 +453,34 @@ def donordash(username):
 
 
 '''Donation section ends'''
+
+
+'''Admin Verification'''
+
+@app.route('/adminlogin',methods=['GET','POST'])
+def adminlogin():
+    return render_template('adminlogin.html')
+
+@app.route('/adminCheck',methods=['GET','POST'])
+def adminCheck():
+    password       = request.form['pswd']
+
+    if(password == 'qwertyuiop'):
+
+        return render_template('index.html')
+
+    else:
+        flash("Wrong Password!😒 Access Denied 🥺")
+        return redirect('/adminlogin')
+    
+
+'''testing avoid backtrack'''
+
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
+
 
 if __name__ == '__main__':
     app.run(debug = True)

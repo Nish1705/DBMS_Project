@@ -56,10 +56,10 @@
         <a href="#" class="fas fa-bars"></a>
 
         <ul>
-          <li><a class="text-black" href="/">Home</a></li>
+          <li><a onclick="return alert('You will have to login again after you go to home!!')" class="text-black" href="/">Home</a></li>
           <li><a class="text-black" href="#">About</a></li>
           <li><a class="text-black" href="#">Contact</a></li>
-          <li><a class="text-black" href="/">Logout</a></li>
+          <li><a onclick="return confirm('Are You Sure You Want to Logout ?')" class="text-black" href="/">Logout</a></li>
         </ul>
       </header>
       <!-- End Header -->
@@ -78,20 +78,20 @@
 
         <ul class="sidebar-list">
           <li class="sidebar-list-item">
-            <a href="/donordash/{{username}}">
+            <a href="/recipientdash/{{username}}">
               <span class="material-icons-outlined">dashboard</span> Dashboard
             </a>
           </li>
           <li class="sidebar-list-item">
             <a href="#" >
-               My Donations
+               My Requests
             </a>
           </li>
 
 
           <li class="sidebar-list-item">
             <a href="#" >
-              Add a new Donation
+              Add a new request
             </a>
           </li>
           <li class="sidebar-list-item">
@@ -100,7 +100,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="/" >
+            <a onclick="return confirm('Are You Sure You Want to Logout ?')" href="/" >
               Logout
             </a>
           </li>

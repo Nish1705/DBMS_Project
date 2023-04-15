@@ -21,8 +21,8 @@
 <ul>
   <li><a href="#">about</a></li>
   <li><a href="#">contact</a></li>
-  <li><a href="/admin">Admin</a></li>
-  <li><a href="#">login(User)</a></li>
+  <li><a href="/adminlogin">Admin</a></li>
+  <li><a href="{{url_for('signin')}}">login(User)</a></li>
 </ul>
 
 
@@ -32,7 +32,7 @@
 <section class="container">
 
 <div class="content">
-  <h1><span class="span1"> Food </span> <span class="span2">Donation</span> <span> Services</span></h1>
+  <h1><span class="span1"> Food </span> <span class="span1">Donation</span> <span> Services</span></h1>
   <br>
   <h2> <span class="span1">better</span> <span class="span2">food,</span> better life </h2>
   <a href="#" class="btn">read more <i class="fas fa-arrow-right"></i></a>
@@ -74,7 +74,7 @@ $(document).ready(function(){
     var random = images[Math.floor(Math.random() * images.length )];
     $('.image').css('background','url(' + random + ')');
 
-  },2500);
+  },3000);
 
 });
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=l.0">
-    <link rel="stylesheet" type = "text/css" href="../static/css/login.css" >
+    <link rel="stylesheet" type = "text/css" href="../static/css/adminlogin.css" >
     <link rel="shortcut icon" type="image/png" href="../static/images/android-chrome-192x192.png">
     <link
     rel="stylesheet"
@@ -15,7 +15,7 @@
 
 
 
-<title> Login </title>
+<title> Admin Login </title>
 
 </head>
 
@@ -38,16 +38,12 @@
         {%endfor%} {%endif%} {%endwith%}
 <div class="form-container" id="back">
 
-    <form action= "{{ url_for('login') }}" method="POST" id="form">
-        <h3>Login</h3>
-        <i class="fas fa-user"></i>
-        <input type="text" name="user" id="user" value='' placeholder="username" required />
-
+    <form action= "{{ url_for('adminCheck') }}" method="POST" id="form">
+        <h3>Admin Login</h3>
         <i class="fas fa-lock"></i>
-        <input type="password" name="pswd" id="pswd" placeholder="password" required />
+        <input type="password" name="pswd" id="pswd" placeholder="Admin Password" required />
         <input type="submit" value="Login">
         <!--  --><br>
-        <p class="text-light">Not a User? <a  style="color: aliceblue; " href="{{ url_for('signup') }}"> Register</a></p>
         <a  style="color: aliceblue; " href="{{ url_for('home') }}"> Home</a>
       </form>
 </div>

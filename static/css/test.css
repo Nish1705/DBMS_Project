@@ -71,7 +71,7 @@ transform-style: preserve-3d;
 }
 .form-container form:hover{
 
-    background: linear-gradient(rgba(0, 0, 0, .1), rgba(0, 0, 0, 0.3))/*,url(bg3.jpg)*/ no-repeat;
+    background: linear-gradient(rgb(100, 71, 99), rgba(0, 0, 0, 0.1)),url(bg3.jpg) no-repeat;
 
     transition: 0.5s;
 }

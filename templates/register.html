@@ -94,6 +94,7 @@
         <input type="submit" value="Register">
         <br>
      <p class="text-light">Already a User? <a  style="color: aliceblue; " href="{{ url_for('signin') }}"> Login</a></p>
+     <a  style="color: aliceblue; " href="{{ url_for('home') }}">Return to Home</a>
 
     </form>
 </div>
@@ -106,8 +107,8 @@ var back = document.getElementById('back');
 var oldx = window.innerWidth
 var oldy = window.innerHeight
 form.addEventListener('mousemove',(e)=>{
-    var x = (window.innerWidth/2 - e.pageX)/15;
-    var y = (window.innerHeight/2 - e.pageY)/15;
+    var x = (window.innerWidth/2 - e.pageX)/20;
+    var y = (window.innerHeight/2 - e.pageY)/50;
     form.style.transform = 'rotateX(' + x + 'deg) rotateY(' + y + 'deg)'
 });
 

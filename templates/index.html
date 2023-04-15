@@ -56,11 +56,11 @@
         <a href="#" class="fas fa-bars"></a>
 
         <ul>
-          <li><a class="text-black" href="#">Home</a></li>
+          <li><a class="text-black" href="/">Home</a></li>
           <li><a class="text-black" href="#">About</a></li>
           <li><a class="text-black" href="#">Contact</a></li>
-          <li><a class="text-black" href="{{url_for('signin')}}">Login</a></li>
-          <li><a class="text-black" href="#">Logout</a></li>
+          <li><a class="text-black" href="{{url_for('signin')}}">User Login</a></li>
+          <li><a class="text-black" onclick="return confirm('Are you Sure you Want to Logout ?')" href="/">Logout</a></li>
         </ul>
       </header>
       <!-- End Header -->
@@ -109,7 +109,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="/" >
+            <a onclick="return confirm('Are You Sure You Want to Logout ?')" href="/" >
               Logout
             </a>
           </li>
