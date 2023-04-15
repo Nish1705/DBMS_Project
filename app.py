@@ -47,21 +47,27 @@ def registration():
     sameemail=False
     for i in x:
         if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
-            flag=True
+            if(str(i[0]).lower()==username.lower()):
+
+                flag=True
+                break
+            else:
+                sameemail=True
+                break
         else:
             continue
     for i in y:
         if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
-            sameemail=True
+            if(str(i[0]).lower()==username.lower()):
+
+                flag=True
+                break
+            else:
+                sameemail=True
+                break
         else:
             continue
  
-    
-    for i in y:
-        if(str(i[0]).lower()==username.lower()):
-            flag=True
-        else:
-            continue
 
     if(flag==False):
         if(sameemail):
@@ -93,7 +99,7 @@ def home():
     cur.execute("create table if not exists `logs` (`username` varchar(20) primary key, `password` varchar(20) not null)")
 
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-
+    cur.close()
     return render_template('Landing.html')
 
 @app.route('/admin')
@@ -141,22 +147,26 @@ def insert():
         # Username duplication Prevention
         for i in x:
             if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
-                flag=True
-                break
-            else:
-                continue
-        
-        if(flag==False):
-            for i in y:
-                if(str(i[0]).lower()==username.lower() or  str(i[1]).lower()==email.lower()):
+                if(str(i[0]).lower()==username.lower()):
+
                     flag=True
                     break
                 else:
-                    continue
+                    sameemail=True
+                    break
+            else:
+                continue
+        for i in y:
+            if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
+                if(str(i[0]).lower()==username.lower()):
 
-
-
-
+                    flag=True
+                    break
+                else:
+                    sameemail=True
+                    break
+            else:
+                continue
         if(flag==False):
             if(sameemail):
                 flash("You have already an existing account by this email! ")
@@ -175,10 +185,10 @@ def insert():
 def edit():
     if request.method == 'POST':
         username = request.form['id']
-        name = request.form['name']
-        email = request.form['email']
-        contact = request.form['contact']
-        address = request.form['address']
+        name =     request.form['name']
+        email =    request.form['email']
+        contact  = request.form['contact']
+        address =  request.form['address']
 
         cur = mysql.connection.cursor()
         cur.execute("update recipients set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
@@ -188,22 +198,6 @@ def edit():
         return redirect(url_for('recipients'))
 
 
-
-# @app.route('/edit', methods= ['POST','GET'])
-# def edit():
-#     if request.method == 'POST':
-#         username = request.form['id']
-#         name = request.form['name']
-#         email = request.form['email']
-#         contact = request.form['contact']
-#         address = request.form['address']
-
-#         cur = mysql.connection.cursor()
-#         cur.execute("update recipients set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
-#         mysql.connection.commit()
-#         cur.close()
-
-#         return redirect(url_for('recipients'))
 
 
 
@@ -299,18 +293,27 @@ def insertdonor():
         sameemail=False
         for i in x:
             if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
-                flag=True
-                break
-            else:
-                continue
+                if(str(i[0]).lower()==username.lower()):
 
-        if(flag==False):
-            for i in y:
-                if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
                     flag=True
                     break
                 else:
-                    continue
+                    sameemail=True
+                    break
+            else:
+                continue
+
+        for i in y:
+            if(str(i[0]).lower()==username.lower() or str(i[1]).lower()==email.lower()):
+                if(str(i[0]).lower()==username.lower()):
+
+                    flag=True
+                    break
+                else:
+                    sameemail=True
+                    break
+            else:
+                continue
 
         if(flag==False):
             if(sameemail):
@@ -381,9 +384,10 @@ def donations():
     return render_template('donations.html')
 
 
-
-
-
+@app.route('/add_donation')
+def add_donations():
+    
+    return render_template('add_donations.html')
 
 '''Donation section ends'''
 

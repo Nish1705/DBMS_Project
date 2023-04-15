@@ -33,7 +33,7 @@
 
 
 {%if flag%}
-<div class="form-container">
+<div class="form-container" id="back">
 
     <form action= "{{ url_for('registration') }}" method="post" id="form">
         <h3>Register</h3>
@@ -59,11 +59,14 @@
         <i class="fas fa-lock"></i>
         <input type="password" name="pswd" placeholder="Password" required />
         <input type="submit" value="Register">
-    </form>
+        <br>  
+      <p class="text-light"> Already a user? </p> <a style="color: aliceblue;" href="{{ url_for('signin') }}">Login</a>
+  </form>
+
 </div>
 
 {%else%}
-<div class="form-container">
+<div class="form-container" id="back">
 
     <form action= "{{ url_for('registration') }}" method="post" id="form">
         <h3>Register</h3>
@@ -89,6 +92,9 @@
         <i class="fas fa-lock"></i>
         <input type="password" name="pswd" placeholder="Password" required />
         <input type="submit" value="Register">
+        <br>
+     <p class="text-light">Already a User? <a  style="color: aliceblue; " href="{{ url_for('signin') }}"> Login</a></p>
+
     </form>
 </div>
 {%endif%}
@@ -96,13 +102,17 @@
 <script>
 
 var form = document.getElementById('form');
+var back = document.getElementById('back');
 var oldx = window.innerWidth
 var oldy = window.innerHeight
 form.addEventListener('mousemove',(e)=>{
-    var x = (window.innerWidth/2 - e.pageX)/11;
-    var y = (window.innerHeight/2 - e.pageY)/11 ;
+    var x = (window.innerWidth/2 - e.pageX)/15;
+    var y = (window.innerHeight/2 - e.pageY)/15;
     form.style.transform = 'rotateX(' + x + 'deg) rotateY(' + y + 'deg)'
 });
+
+
+
 
 </script>
 
