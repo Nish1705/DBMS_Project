@@ -24,7 +24,7 @@
         padding: 180px;
         padding-top: 50px;
         margin: 60px;
-        margin-left: 170px;
+        margin-left: 200px;
         margin-right: 268px;
         margin-bottom: 200px;
         margin-top: 40px;
@@ -90,20 +90,104 @@
           <br>
           <tr>
             <a
-              href="/editdonors"
+              href="/editdonorprofile/{{username}}"
               class="btn btn-warning btn-sm"
               data-toggle="modal"
-              data-target="#modaledit"
+              data-target="#modaledit{{username}}"
               style="margin-right: 50px;"
               >Edit</a
             >
           </tr>
           <br>
           <br>
+          <!-- Edit Donors Modal -->
+          <div id="modaledit{{record[0][5]}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5
+                    class="modal-title text-primary"
+                    style="align-content: center"
+                  >
+                    Update Donor Details
+                  </h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+
+                <div class="modal-body">
+                  <form action="{{ url_for('editdonorprofile')}}" method="POST">
+                    <input type="hidden" name="id" value="{{username}}" />
+                  
+                <div class="modal-content">
+       
+                      
+    
+                    <div class="modal-body">
+                        
+                        <form action="{{ url_for('editdonorprofile')}}" method="POST">
+                            <input type="hidden" name="id" value="{{record[0][5]}}">
+                            <div class="form-group">
+                              <label>Complete Name</label>
+                              <input value="{{record[0][0]}}" type="text" name="name" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Name" required>
+                            </div>
+
+                            <div class="form-group">
+                              <label>Complete Address</label>
+                              <input value="{{record[0][1]}}" type="text" name="address" class="form-control" id="exampleFormControlInput1" placeholder="Enter Full Address" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input value="{{record[0][2]}}" type="text" name="email" class="form-control" id="exampleFormControlInput1" placeholder="Enter Email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input value="{{record[0][3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number" required>
+                              </div>
+
+
+                            <hr>
+                              <button type="submit" class="btn btn-success mb-2">Update</button>
+                         
+                          </form>
+    
+    
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- End of Edit Donors Modal -->
+
         </tbody>
         <br />
       </table>
     </div>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
 

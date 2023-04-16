@@ -440,6 +440,22 @@ def donorprofile(username_data):
     record = cur.fetchall()
     return render_template('donorprofile.html', record = record,username=username_data)
 
+@app.route('/editdonorprofile', methods= ['POST','GET'])
+def editdonorprofile():
+    if request.method == 'POST':
+        username = request.form['id']
+        name = request.form['name']
+        email = request.form['email']
+        contact = request.form['contact']
+        address = request.form['address']
+
+        cur = mysql.connection.cursor()
+        cur.execute("update donors set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('donorprofile', username_data = username))
+
 '''Donor section ends'''
 
 
