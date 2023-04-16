@@ -346,7 +346,31 @@ def delete(username_data):
 def recipientdash(username):
     return render_template('recipientdash.html',username=username)
 
+@app.route('/recipientprofile/<string:username_data>', methods= ['GET'])
+def recipientprofile(username_data):
+    cur = mysql.connection.cursor()
+    sql = "select * from recipients where username = %s"
+    username = (username_data, )
+    cur.execute(sql, username)
+    record = cur.fetchall()
+    return render_template('recipientprofile.html', record = record,username=username_data)
 
+
+@app.route('/editrecipientprofile', methods= ['POST','GET'])
+def editrecipientprofile():
+    if request.method == 'POST':
+        username = request.form['id']
+        name = request.form['name']
+        email = request.form['email']
+        contact = request.form['contact']
+        address = request.form['address']
+
+        cur = mysql.connection.cursor()
+        cur.execute("update recipients set name=%s,email=%s,contact = %s,address=%s where username=%s",(name,email,contact,address,username))
+        mysql.connection.commit()
+        cur.close()
+
+        return redirect(url_for('recipientprofile', username_data = username))
 
 
 
