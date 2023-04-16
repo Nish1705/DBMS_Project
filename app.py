@@ -431,6 +431,14 @@ def editdonors():
 
         return redirect(url_for('donors'))
 
+@app.route('/donorprofile/<string:username_data>', methods= ['GET'])
+def donorprofile(username_data):
+    cur = mysql.connection.cursor()
+    sql = "select * from donors where username = %s"
+    username = (username_data, )
+    cur.execute(sql, username)
+    record = cur.fetchall()
+    return render_template('donorprofile.html', record = record,username=username_data)
 
 '''Donor section ends'''
 
@@ -442,10 +450,10 @@ def donations():
     return render_template('donations.html')
 
 
-@app.route('/add_donation')
-def add_donations():
+@app.route('/add_donation/<string:username_>')
+def add_donations(username_):
 
-    return render_template('add_donations.html')
+    return render_template('add_donations.html', username = username_)
 
 @app.route('/donordash/<string:username>')
 def donordash(username):
