@@ -99,6 +99,21 @@ def home():
     cur.execute("create table if not exists `logs` (`username` varchar(20) , `password` varchar(20) not null, `type` varchar(30))")
     cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null unique, `email` varchar(30), `type` varchar(30))")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists food_items (food_category varchar(20) primary key, quantity int check (quantity <= 100))")
+    sql_donations = '''CREATE TABLE IF NOT EXISTS donations (
+                        donation_id INT AUTO_INCREMENT PRIMARY KEY,
+                        username VARCHAR(20) NOT NULL,
+                        food_category VARCHAR(20) NOT NULL,
+                        quantity INT,
+                        title VARCHAR(40),
+                        description VARCHAR(70),
+                        donation_date DATE DEFAULT CURRENT_DATE(),
+                        pickup VARCHAR(30),
+                        remarks VARCHAR(50),
+                        FOREIGN KEY (username) REFERENCES donors(username),
+                        FOREIGN KEY (food_category) REFERENCES food_items(food_category)
+                        )'''
+    cur.execute(sql_donations)
     sql = '''CREATE TRIGGER if not exists add_user_after_insertdonors
                 AFTER INSERT ON donors
                 FOR EACH ROW
