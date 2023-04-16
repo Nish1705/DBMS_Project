@@ -186,6 +186,22 @@ def home():
     cur.execute(sql_after_update_don)
     mysql.connection.commit()
 
+
+    sql_before_insert_donations = '''CREATE TRIGGER if not exists `before_insert_donations` BEFORE INSERT ON `donations` FOR EACH ROW BEGIN DECLARE total_qty INT; SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category; IF (NEW.quantity + total_qty) > 100 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donation quantity cannot exceed 100 units for this food category.'; END IF; END'''
+    cur.execute(sql_before_insert_donations)
+    mysql.connection.commit()
+
+    sql_update_food_items_after_donation = '''CREATE TRIGGER if not exists update_food_items_quantity_after_donation AFTER INSERT ON donations
+                                                FOR EACH ROW
+                                                BEGIN
+                                                    UPDATE food_items
+                                                    SET quantity = quantity + NEW.quantity
+                                                    WHERE food_category = NEW.food_category;
+                                                END;'''
+    
+    cur.execute(sql_update_food_items_after_donation)
+    mysql.connection.commit()
+
     cur.close()
     return render_template('Landing.html')
 
@@ -545,6 +561,27 @@ def add_donations(username_):
 def donordash(username):
     return render_template('donordash.html',username=username)
 
+@app.route('/insertdonation/<string:username>', methods = ['GET', 'POST'])
+def insertdonation(username):
+    if request.method == 'POST':
+        food_cat = request.form.get('food_cat')
+        quantity = request.form.get('donate_qty')
+        title =  request.form.get('donation_title')
+        description = request.form.get('description')
+        pickup = request.form.get('donation_pickup')
+        remarks = request.form.get('donation_remarks')
+        quant = (quantity,)
+        cur = mysql.connection.cursor()
+        try:
+
+            sql_query = '''insert into `donations` (username, food_category, quantity, title, description, pickup, remarks) values (%s, %s, %s, %s, %s, %s, %s)'''
+            cur.execute(sql_query, (username, food_cat, quant, title, description, pickup, remarks))
+            mysql.connection.commit()
+            cur.close()
+        except Exception as e:
+            flash(e)
+
+        return render_template('donordash.html',username=username)
 
 '''Donation section ends'''
 

@@ -16,7 +16,7 @@
       crossorigin="anonymous"
     />
 
-    <title>Add DOnation | Donors</title>
+    <title>Add Donation | Donors</title>
   </head>
 
   <body>
@@ -69,13 +69,13 @@
 
 {%else%} -->
     <div class="form-container">
-      <form action="" method="post" id="form">
+      <form action="/insertdonation/{{username}}" method="post" id="form">
         <h3>Add Donation</h3>
         <div class="user-details">
           <div class="input-box">
             <span class="details">Food Category</span>
             <select name="food_cat" id="food_cat">
-              <option value="cannedgoods">Canned Goods</option>
+              <option value="canned">Canned</option>
               <option value="produce">Produce</option>
               <option value="meat">Meat</option>
               <option value="dairy">Dairy</option>
@@ -96,7 +96,7 @@
             <input
               type="text"
               placeholder="Donation for ..."
-              name="donor_title"
+              name="donation_title"
               required
             />
           </div>
@@ -114,13 +114,13 @@
             <input
               type="text"
               placeholder="Enter pickup location"
-              name="donor_pickup"
+              name="donation_pickup"
               required
             />
           </div>
           <div class="input-box">
             <span class="details">Remarks</span>
-            <input type="text" placeholder="Enter remarks" name="donor_remarks" required />
+            <input type="text" placeholder="Enter remarks" name="donation_remarks" required />
           </div>
         </div>
         <!-- <i class="fas fa-user"></i>
