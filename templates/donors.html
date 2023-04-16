@@ -115,6 +115,7 @@
             </td>
           </tr>
           <!-- Edit Donors Modal -->
+
           <div id="modaledit{{row[5]}}" class="modal fade" role="dialog">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -138,9 +139,10 @@
                 <div class="modal-body">
                   <form action="{{ url_for('editdonors')}}" method="POST">
                     <input type="hidden" name="id" value="{{row[5]}}" />
-                  
+                    
                 <div class="modal-content">
        
+
                       
     
                     <div class="modal-body">
@@ -163,18 +165,21 @@
                             </div>
     
                             <div class="form-group">
-                                <label>Contact Number</label>
-                                <input value="{{row[3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number" required>
+                                <label >Contact Number</label>
+                                <input  value="{{row[3]}}" name="contact" type="text" class="form-control" id="exampleFormControlInput1" placeholder="Enter Contact Number" required>
                               </div>
 
 
-                            <hr>
+                            <hr>                            
+                            <center>
                               <button type="submit" class="btn btn-success mb-2">Update</button>
+                            </center>
                          
                           </form>
     
     
                     </div>
+
                   </form>
                 </div>
               </div>

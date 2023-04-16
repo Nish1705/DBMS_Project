@@ -140,6 +140,37 @@ def home():
     
     cur.execute(sql_after_delete)
     mysql.connection.commit()
+
+    sql_after_update_rec = '''CREATE TRIGGER if not exists update_recipient_trigger
+                            AFTER UPDATE ON recipients
+                            FOR EACH ROW 
+                            BEGIN
+                                UPDATE all_users 
+                                SET email = NEW.email
+                                WHERE username = OLD.username
+                                
+                                ;
+                            END;'''
+    
+    
+    cur.execute(sql_after_update_rec)
+    mysql.connection.commit()
+
+    sql_after_update_don = '''
+                            CREATE TRIGGER if not exists update_donor_trigger
+                            AFTER UPDATE ON donors
+                            FOR EACH ROW 
+                            BEGIN
+                                UPDATE all_users 
+                                SET email = NEW.email
+                                WHERE username = OLD.username;
+                            END;
+                            '''
+    
+    
+    cur.execute(sql_after_update_don)
+    mysql.connection.commit()
+
     cur.close()
     return render_template('Landing.html')
 
@@ -504,7 +535,16 @@ def adminCheck():
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     return response
+'''All Users display'''
 
+@app.route('/allusers',methods=['GET','POST'])
+def allusers():
+    cur = mysql.connection.cursor()
+    cur.execute("select * from all_users")
+    record = cur.fetchall()
+    cur.close()
+
+    return render_template('allusers.html',record=record)
 
 if __name__ == '__main__':
     app.run(debug = True)
