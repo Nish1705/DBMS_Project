@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=l.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../static/css/add_donations.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.rtl.min.css"
+      integrity="sha384-T5m5WERuXcjgzF8DAb7tRkByEZQGcpraRTinjpywg37AO96WoYN9+hrhDVoM6CaT"
+      crossorigin="anonymous"
+    />
+
+    <title>Add Requests | Recipients</title>
+  </head>
+
+  <body>
+    {%with messages = get_flashed_messages()%} {%if messages%} {% for message in
+    messages %}
+
+    <div class="alert alert-success alert-dismissable" role="alert">
+      {{message}}
+
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {%endfor%} {%endif%} {%endwith%}
+
+    <!-- {%if flag%}
+<div class="form-container">
+
+    <form action= "" method="post" id="form">
+        <h3>Register</h3>
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="name" value='{{name}}' placeholder="Name" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="address" value='{{address}}' placeholder="Adress" required />
+
+        <i class="fas fa-at"></i>
+        <input name="email" type="email" value ='{{email}}' placeholder="Email" required>
+
+        <i class="fas fa-user"></i>
+        <input type="number" name="contact" value='{{contact}}' placeholder="Contact" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="type" value='{{type}}' placeholder="Donor or Recipient" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="username" value='' placeholder="Username" required />
+
+        <i class="fas fa-lock"></i>
+        <input type="password" name="pswd" placeholder="Password" required />
+        <input type="submit" value="Register">
+    </form>
+</div>
+
+{%else%} -->
+    <div class="form-container">
+      <form action="/insertrequest/{{username}}" method="post" id="form">
+        <h3>Add Request</h3>
+        <div class="user-details">
+          <div class="input-box">
+            <span class="details">Food Category</span>
+            <select name="food_cat" id="food_cat">
+              <option value="canned">Canned</option>
+              <option value="produce">Produce</option>
+              <option value="meat">Meat</option>
+              <option value="dairy">Dairy</option>
+              <option value="grains">Grains</option>
+            </select>
+          </div>
+          <div class="input-box">
+            <span class="details">Quantity</span>
+            <input
+              type="text"
+              placeholder="Enter the quantity"
+              name="request_qty"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <span class="details">Title</span>
+            <input
+              type="text"
+              placeholder="Request for ..."
+              name="request_title"
+              required
+            />
+          </div>
+          <div class="input-box">
+            <span class="details">Remarks</span>
+            <input type="text" placeholder="Enter remarks" name="request_remarks" required />
+          </div>
+        </div>
+        <!-- <i class="fas fa-user"></i>
+        <input type="text" name="name" value='' placeholder="Name" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="address" value='' placeholder="Adress" required />
+
+        <i class="fas fa-at"></i>
+        <input name="email" type="email" value ='' placeholder="Email" required>
+
+        <i class="fas fa-user"></i>
+        <input type="number" name="contact" value='' placeholder="Contact" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="username" value='' placeholder="Username" required />
+
+        <i class="fas fa-user"></i>
+        <input type="text" name="type" value='' placeholder="Donor or Recipient" required />
+
+        <i class="fas fa-lock"></i>
+        <input type="password" name="pswd" placeholder="Password" required /> -->
+        <input type="submit" value="Add Request" />
+        <br>
+        <br>
+        <br>
+        <a href="/" style="color: #ccc;"> Home </a>
+      </form>
+    </div>
+    <!-- {%endif%} -->
+
+    <script>
+      var form = document.getElementById("form");
+      var oldx = window.innerWidth;
+      var oldy = window.innerHeight;
+      form.addEventListener("mousemove", (e) => {
+        var x = (window.innerWidth / 2 - e.pageX) / 11;
+        var y = (window.innerHeight / 2 - e.pageY) / 11;
+        form.style.transform = "rotateX(" + x + "deg) rotateY(" + y + "deg)";
+      });
+    </script>
+  </body>
+  <script
+    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"
+  ></script>
+</html>

@@ -100,6 +100,20 @@ def home():
     cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null unique, `email` varchar(30), `type` varchar(30))")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     cur.execute("create table if not exists food_items (food_category varchar(20) primary key, quantity int check (quantity <= 100))")
+    sql_requests = '''CREATE TABLE IF NOT EXISTS `requests` (
+                      request_id INT AUTO_INCREMENT PRIMARY KEY,
+                      username VARCHAR(20) NOT NULL,
+                      food_category VARCHAR(20) NOT NULL,
+                      quantity INT,
+                      title VARCHAR(40),
+                      request_date DATE DEFAULT CURRENT_DATE(),
+                      remarks VARCHAR(50),
+                      status VARCHAR(10),
+                      FOREIGN KEY (username) REFERENCES recipients(username),
+                      FOREIGN KEY (food_category) REFERENCES food_items(food_category)
+    )         
+    '''
+    cur.execute(sql_requests)
     sql_donations = '''CREATE TABLE IF NOT EXISTS donations (
                         donation_id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(20) NOT NULL,
@@ -189,6 +203,23 @@ def home():
 
     sql_before_insert_donations = '''CREATE TRIGGER if not exists `before_insert_donations` BEFORE INSERT ON `donations` FOR EACH ROW BEGIN DECLARE total_qty INT; SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category; IF (NEW.quantity + total_qty) > 100 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donation quantity cannot exceed 100 units for this food category.'; END IF; END'''
     cur.execute(sql_before_insert_donations)
+    mysql.connection.commit()
+
+    sql_before_insert_requests = '''
+    CREATE TRIGGER IF NOT EXISTS before_insert_requests
+    BEFORE INSERT ON requests
+    FOR EACH ROW
+    BEGIN
+        DECLARE total_qty INT;
+        SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category;
+        IF (NEW.quantity <= total_qty) THEN
+            SET NEW.status = 'Pending';
+        ELSE
+            SET NEW.status = 'Completed';
+        END IF;
+    END;
+'''
+    cur.execute(sql_before_insert_requests)
     mysql.connection.commit()
 
     sql_update_food_items_after_donation = '''CREATE TRIGGER if not exists update_food_items_quantity_after_donation AFTER INSERT ON donations
@@ -584,6 +615,35 @@ def insertdonation(username):
         return render_template('donordash.html',username=username)
 
 '''Donation section ends'''
+'''Request Section Starts'''
+
+@app.route('/add_requests/<string:username_>')
+def add_requests(username_):
+
+    return render_template('add_requests.html', username = username_)
+
+@app.route('/insertrequest/<string:username>', methods = ['GET', 'POST'])
+def insertrequest(username):
+    if request.method == 'POST':
+        food_cat = request.form.get('food_cat')
+        quantity = request.form.get('request_qty')
+        title =  request.form.get('request_title')
+        remarks = request.form.get('request_remarks')
+        quant = (quantity,)
+        cur = mysql.connection.cursor()
+        try:
+
+            sql_query = '''insert into `requests` (username, food_category, quantity, title, remarks) values (%s, %s, %s, %s, %s)'''
+            cur.execute(sql_query, (username, food_cat, quant, title, remarks))
+            mysql.connection.commit()
+            cur.close()
+        except Exception as e:
+            flash(e)
+
+        return render_template('recipientdash.html',username=username)
+
+
+
 
 
 '''Admin Verification'''
