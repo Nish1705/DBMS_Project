@@ -212,7 +212,7 @@ def home():
     BEGIN
         DECLARE total_qty INT;
         SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category;
-        IF (NEW.quantity <= total_qty) THEN
+        IF (NEW.quantity >= total_qty) THEN
             SET NEW.status = 'Pending';
         ELSE
             SET NEW.status = 'Completed';
@@ -232,6 +232,49 @@ def home():
     
     cur.execute(sql_update_food_items_after_donation)
     mysql.connection.commit()
+
+    procedure1='''
+CREATE OR REPLACE PROCEDURE `process_requests`()
+BEGIN
+  DECLARE done INT DEFAULT 0;
+  DECLARE foodCat VARCHAR(20);
+  DECLARE requestedQuantity INT;
+  DECLARE foodQuantity INT;
+  
+  DECLARE cur CURSOR FOR SELECT food_category, quantity FROM requests;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+  
+  START TRANSACTION;
+  
+
+  OPEN cur;
+  
+  read_loop: LOOP
+    FETCH cur INTO foodCat,requestedQuantity;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+    
+    SELECT quantity INTO foodQuantity FROM food_items WHERE food_category = foodCat;
+    
+   
+    IF foodQuantity >= requestedQuantity THEN
+      UPDATE food_items SET quantity = foodQuantity - requestedQuantity WHERE food_category = foodCat;
+      UPDATE requests SET status = 'Completed' WHERE food_category = foodCat;
+    ELSE
+
+      UPDATE requests SET status = 'Pending' WHERE food_category = foodCat;
+    END IF;
+  END LOOP;
+  
+  CLOSE cur; COMMIT;
+
+END
+'''
+
+    cur.execute(procedure1)
+    mysql.connection.commit()
+
 
     cur.close()
     return render_template('Landing.html')
