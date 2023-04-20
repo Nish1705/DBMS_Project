@@ -378,17 +378,50 @@ END'''
     mysql.connection.commit()
 
 
-    procedure4 = ''''''
+    procedure4 = '''CREATE OR REPLACE PROCEDURE `insert_request`(
+    IN p_username VARCHAR(20),
+    IN p_food_cat VARCHAR(20),
+    IN p_quant INT,
+    IN p_title VARCHAR(40),
+    IN p_remarks VARCHAR(50)
+)
+BEGIN
+    INSERT INTO `requests` (
+        `username`,
+        `food_category`,
+        `quantity`,
+        `title`,
+        `remarks`
+    ) VALUES (
+        p_username,
+        p_food_cat,
+        p_quant,
+        p_title,
+        p_remarks
+    );
+END'''
 
 
-    # cur.execute(procedure4)
+    cur.execute(procedure4)
     mysql.connection.commit()
 
 
-    procedure5 = ''''''
+    procedure5 = '''CREATE OR REPLACE PROCEDURE insert_donation (
+  IN p_username VARCHAR(20),
+  IN p_food_category VARCHAR(20),
+  IN p_quantity INT,
+  IN p_title VARCHAR(40),
+  IN p_description VARCHAR(70),
+  IN p_pickup VARCHAR(30),
+  IN p_remarks VARCHAR(50)
+)
+BEGIN
+  INSERT INTO `donations` (username, food_category, quantity, title, description, pickup, remarks) 
+  VALUES (p_username, p_food_category, p_quantity, p_title, p_description, p_pickup, p_remarks);
+END'''
 
 
-    # cur.execute(procedure5)
+    cur.execute(procedure5)
     mysql.connection.commit()
 # ----------------------------------PROCEDURES END-------------------------------------------------------------
 
@@ -962,9 +995,7 @@ def insertdonation(username):
         cur = mysql.connection.cursor()
         try:
 
-            sql_query = '''insert into `donations` (username, food_category, quantity, title, description, pickup, remarks) values (%s, %s, %s, %s, %s, %s, %s)'''
-        
-            cur.execute(sql_query, (username, food_cat, quant, title, description, pickup, remarks))
+            cur.execute("call insert_donation(%s, %s, %s, %s, %s, %s, %s)", (username, food_cat, quant, title, description, pickup, remarks))
             cur.execute("CALL process_requests();")
             mysql.connection.commit()
             cur.close()
@@ -1024,8 +1055,8 @@ def insertrequest(username):
         cur = mysql.connection.cursor()
         try:
 
-            sql_query = '''insert into `requests` (username, food_category, quantity, title, remarks) values (%s, %s, %s, %s, %s)'''
-            cur.execute(sql_query, (username, food_cat, quant, title, remarks))
+            
+            cur.execute("call insert_request(%s, %s, %s, %s, %s)" (username, food_cat, quant, title, remarks))
             mysql.connection.commit()
             cur.close()
         except Exception as e:
