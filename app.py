@@ -95,10 +95,21 @@ def registration():
 def home():
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
+
+
+
+
+
+
+
+
+    #----------------------------------------TABLES-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    
+    
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
     cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null, `email` varchar(30) unique, `type` varchar(30))")
-    mysql.connection.commit()
     cur.execute("create table if not exists `logs` (`username` varchar(20) , `password` varchar(20) not null, `type` varchar(30),`login_date` DATE DEFAULT CURRENT_DATE())")
 
     cur.execute("create table if not exists food_items (food_category varchar(20) primary key, quantity int check (quantity <= 100))")
@@ -129,6 +140,20 @@ def home():
                         FOREIGN KEY (username) REFERENCES donors(username),
                         FOREIGN KEY (food_category) REFERENCES food_items(food_category)
                         )'''
+    
+    # -------------------------------------------TABLES END----------------------------------------------------
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
+    #----------------------------------------TRIGGERS-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     cur.execute(sql_donations)
     sql = '''CREATE TRIGGER if not exists add_user_after_insertdonors
                 AFTER INSERT ON donors
@@ -172,7 +197,7 @@ def home():
     cur.execute(sql_after_delete)
     mysql.connection.commit()
 
-    sql_after_update_rec = '''CREATE TRIGGER if not exists update_recipient_trigger
+    sql_after_update_rec = '''CREATE OR REPLACE TRIGGER update_recipient_trigger
                             AFTER UPDATE ON recipients
                             FOR EACH ROW 
                             BEGIN
@@ -188,7 +213,7 @@ def home():
     mysql.connection.commit()
 
     sql_after_update_don = '''
-                            CREATE TRIGGER if not exists update_donor_trigger
+                            CREATE OR REPLACE TRIGGER update_donor_trigger
                             AFTER UPDATE ON donors
                             FOR EACH ROW 
                             BEGIN
@@ -198,12 +223,14 @@ def home():
                             END;
                             '''
     
+
+    
     
     cur.execute(sql_after_update_don)
     mysql.connection.commit()
 
 
-    sql_before_insert_donations = '''CREATE TRIGGER if not exists `before_insert_donations` BEFORE INSERT ON `donations` FOR EACH ROW BEGIN DECLARE total_qty INT; SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category; IF (NEW.quantity + total_qty) > 100 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donation quantity cannot exceed 100 units for this food category.'; END IF; END'''
+    sql_before_insert_donations = '''CREATE OR REPLACE TRIGGER `before_insert_donations` BEFORE INSERT ON `donations` FOR EACH ROW BEGIN DECLARE total_qty INT; SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category; IF (NEW.quantity + total_qty) > 100 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Donation quantity cannot exceed 100 units for this food category.'; END IF; END'''
     cur.execute(sql_before_insert_donations)
     mysql.connection.commit()
 
@@ -220,7 +247,7 @@ END
     cur.execute(sql_before_insert_requests)
     mysql.connection.commit()
 
-    sql_update_food_items_after_donation = '''CREATE TRIGGER if not exists update_food_items_quantity_after_donation AFTER INSERT ON donations
+    sql_update_food_items_after_donation = '''CREATE OR REPLACE TRIGGER update_food_items_quantity_after_donation AFTER INSERT ON donations
                                                 FOR EACH ROW
                                                 BEGIN
                                                     UPDATE food_items
@@ -230,6 +257,26 @@ END
     
     cur.execute(sql_update_food_items_after_donation)
     mysql.connection.commit()
+
+
+# -----------------------------------------TRIGGERS END----------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ---------------------------------------PROCEDURES START---------------------------------------------------------------------------------------------------
 
     procedure1='''
 CREATE OR REPLACE PROCEDURE `process_requests`()
@@ -274,7 +321,92 @@ END
     cur.execute(procedure1)
     mysql.connection.commit()
 
-    function1 = '''
+    procedure2 = '''
+    CREATE OR REPLACE PROCEDURE insert_food_items()
+BEGIN
+    -- Check if the food items already exist
+    IF NOT EXISTS(SELECT * FROM food_items WHERE food_category IN ('canned', 'produce', 'meat', 'dairy', 'grains')) THEN
+        -- Insert the new rows
+        INSERT INTO food_items (food_category, quantity) VALUES ('canned', 0), ('produce', 0), ('meat', 0), ('dairy', 0), ('grains', 0);
+    END IF;
+END;
+'''
+    cur.execute(procedure2)
+    mysql.connection.commit()
+
+
+    procedure3 = '''CREATE OR REPLACE PROCEDURE `count_donors_recipients`(
+    OUT total_donors INT,
+    OUT total_recipients INT
+)
+BEGIN
+    DECLARE done BOOLEAN DEFAULT FALSE;
+    
+    DECLARE current_type VARCHAR(20);
+    DECLARE donor_count INT DEFAULT 0;
+    DECLARE recipient_count INT DEFAULT 0;
+    DECLARE cur CURSOR FOR SELECT type FROM all_users;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+
+    OPEN cur;
+    read_loop: LOOP
+        FETCH cur INTO current_type;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        
+        IF current_type = 'donor' THEN
+            SET donor_count = donor_count + 1;
+        ELSEIF current_type = 'recipient' THEN
+            SET recipient_count = recipient_count + 1;
+        END IF;
+        
+    END LOOP;
+    
+    CLOSE cur;
+    
+    SET total_donors = donor_count;
+    SET total_recipients = recipient_count;
+    
+    COMMIT;
+END'''
+
+
+    cur.execute(procedure3)
+    mysql.connection.commit()
+
+
+    procedure4 = ''''''
+
+
+    # cur.execute(procedure4)
+    mysql.connection.commit()
+
+
+    procedure5 = ''''''
+
+
+    # cur.execute(procedure5)
+    mysql.connection.commit()
+# ----------------------------------PROCEDURES END-------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =================================FUNCTIONS START-------------------------------------------------------------
+
+    check_request_status = '''
 CREATE OR REPLACE FUNCTION `check_request_status`(p_food_category VARCHAR(255), p_quantity INT) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
 BEGIN
     DECLARE total_qty INT;
@@ -292,15 +424,164 @@ BEGIN
     RETURN request_status;
 END
     '''
-    cur.execute(function1)
+    cur.execute(check_request_status)
     mysql.connection.commit()
+
+    max_donations_function='''CREATE OR REPLACE FUNCTION max_donations() RETURNS VARCHAR(30)
+BEGIN
+    DECLARE max_username VARCHAR(20);
+    DECLARE max_donations INT;
+    DECLARE max_name VARCHAR(30);
+    
+    SELECT username, SUM(quantity) INTO max_username, max_donations
+    FROM donations
+    GROUP BY username
+    ORDER BY max_donations DESC
+    LIMIT 1;
+    
+    SELECT name INTO max_name
+    FROM donors
+    WHERE username = max_username;
+    
+    RETURN max_name;
+END'''
+    cur.execute(max_donations_function)
+    mysql.connection.commit()
+
+    max_donation_by_category_function = '''CREATE OR REPLACE FUNCTION `top_donations_by_category`(`category` VARCHAR(20)) RETURNS int(11)
+BEGIN
+  DECLARE donor_name VARCHAR(20);
+  DECLARE total_donations INT DEFAULT 0;
+  DECLARE done BOOLEAN DEFAULT FALSE;
+  DECLARE cur CURSOR FOR SELECT username FROM donors;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  
+  CREATE TEMPORARY TABLE IF NOT EXISTS temp_table (username VARCHAR(20), total_donated INT);
+  
+  OPEN cur;
+  read_loop: LOOP
+    FETCH cur INTO donor_name;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+    
+    INSERT INTO temp_table (username, total_donated)
+    SELECT username, SUM(quantity)
+    FROM donations
+    WHERE username = donor_name AND food_category = category
+    GROUP BY username;
+    
+    SELECT SUM(total_donated) INTO total_donations FROM temp_table;
+    
+  END LOOP;
+  
+  CLOSE cur;
+  
+
+  
+  RETURN total_donations;
+END'''
+
+    cur.execute(max_donation_by_category_function)
+    mysql.connection.commit()
+
+    max_donor_by_category_function='''
+CREATE OR REPLACE FUNCTION `max_donations_by_category_donor_username`(`category_name` VARCHAR(20)) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+BEGIN
+  DECLARE max_donations INT;
+  DECLARE donor_name VARCHAR(20);
+  
+  SELECT username, SUM(quantity) AS total_donated
+  INTO donor_name, max_donations
+  FROM donations
+  WHERE food_category = category_name
+  GROUP BY username
+  ORDER BY total_donated DESC
+  LIMIT 1;
+  
+  RETURN donor_name;
+END
+'''
+
+    cur.execute(max_donor_by_category_function)
+    mysql.connection.commit()
+
+    count_complete = '''
+CREATE OR REPLACE FUNCTION `completed_requests`() RETURNS INT
+BEGIN
+	DECLARE DONE INT;
+	SELECT COUNT(*) INTO DONE FROM `requests` WHERE status='Completed';
+	RETURN DONE;
+END
+'''
+    cur.execute(count_complete)
+    mysql.connection.commit()
+
+    count_pending = '''
+CREATE OR REPLACE FUNCTION `completed_requests`() RETURNS INT
+BEGIN
+	DECLARE DONE INT;
+	SELECT COUNT(*) INTO DONE FROM `requests` WHERE status='Pending';
+	RETURN DONE;
+END
+'''
+    cur.execute(count_pending)
+    mysql.connection.commit()
+
+
+
+# ---------------------------------------FUNCTIONS END--------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
     cur.close()
     return render_template('Landing.html')
 
 @app.route('/admin')
 def index():
-    return render_template('index.html')
+    cur = mysql.connection.cursor()
+    cur.execute("select max_donations()")
+    a  = cur.fetchall()
+    cur.close()
+
+    total_donors=total_recipients=0
+# Call the stored procedure
+    cur = mysql.connection.cursor()
+    cur.callproc('count_donors_recipients',[total_donors,total_recipients])
+
+    # Get the results from the OUT parameters
+    results = cur.fetchone()
+    total_donors = results[0]
+    total_recipients = results[1]
+    cur.close()
+    cur = mysql.connection.cursor()
+
+    highest_donors=[]
+    cur.execute("select max_donations_by_category_donor_username(%s)",('grains',))
+    a  = cur.fetchall()[0][0]
+    highest_donors.append(a)
+    cur.execute("select max_donations_by_category_donor_username(%s)",('produce',))
+    e  = cur.fetchall()[0][0]
+    highest_donors.append(a)
+    cur.execute("select max_donations_by_category_donor_username(%s)",('meat',))
+    d  = cur.fetchall()[0][0]
+    highest_donors.append(a)
+    cur.execute("select max_donations_by_category_donor_username(%s)",('dairy',))
+    c  = cur.fetchall()[0][0]
+    highest_donors.append(a)
+    cur.execute("select max_donations_by_category_donor_username(%s)",('canned',))
+    b  = cur.fetchall()[0][0]
+    highest_donors.append(a)
+    return render_template('index.html',max_donation=a[0][0],a = a, b=b, c=c, d=d, e=e)
 
 @app.route('/signup')
 def signup():
