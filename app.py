@@ -551,7 +551,7 @@ END
     mysql.connection.commit()
 
     count_pending = '''
-CREATE OR REPLACE FUNCTION `completed_requests`() RETURNS INT
+CREATE OR REPLACE FUNCTION `pending_requests`() RETURNS INT
 BEGIN
 	DECLARE DONE INT;
 	SELECT COUNT(*) INTO DONE FROM `requests` WHERE status='Pending';
@@ -582,8 +582,9 @@ END
 @app.route('/admin')
 def index():
     cur = mysql.connection.cursor()
+    # Call the function
     cur.execute("select max_donations()")
-    a  = cur.fetchall()
+    max_don  = cur.fetchall()
     cur.close()
 
     total_donors=total_recipients=0
@@ -593,28 +594,49 @@ def index():
 
     # Get the results from the OUT parameters
     results = cur.fetchone()
-    total_donors = results[0]
-    total_recipients = results[1]
+    # total_donors = results[0]
+    # total_recipients = results[1]
     cur.close()
     cur = mysql.connection.cursor()
 
     highest_donors=[]
     cur.execute("select max_donations_by_category_donor_username(%s)",('grains',))
-    a  = cur.fetchall()[0][0]
+    try:
+        a  = cur.fetchall()[0][0]
+    except:
+        a="No Donation Yet"
     highest_donors.append(a)
     cur.execute("select max_donations_by_category_donor_username(%s)",('produce',))
-    e  = cur.fetchall()[0][0]
-    highest_donors.append(a)
+    try:
+        e  = cur.fetchall()[0][0]
+    except:
+        e="No Donation Yet"
     cur.execute("select max_donations_by_category_donor_username(%s)",('meat',))
-    d  = cur.fetchall()[0][0]
-    highest_donors.append(a)
+    try:
+        d  = cur.fetchall()[0][0]
+    except:
+        d= "No Donation Yet"
     cur.execute("select max_donations_by_category_donor_username(%s)",('dairy',))
-    c  = cur.fetchall()[0][0]
-    highest_donors.append(a)
+    try:
+        c  = cur.fetchall()[0][0]
+    except:
+        c="No Donation Yet"
     cur.execute("select max_donations_by_category_donor_username(%s)",('canned',))
-    b  = cur.fetchall()[0][0]
-    highest_donors.append(a)
-    return render_template('index.html',max_donation=a[0][0],a = a, b=b, c=c, d=d, e=e)
+    try:
+        b  = cur.fetchall()[0][0]
+    except:
+        b="No Donation Yet"
+
+    # Call function to know how many requests are pending
+    cur.execute("select pending_requests()")
+    pending = cur.fetchall()
+    # Call function to know how many requests are completed
+    cur.execute("select completed_requests()")
+    complete =  cur.fetchall()
+
+    cur.close()
+    
+    return render_template('index.html',max_donation=max_don[0][0],a = a, b=b, c=c, d=d, e=e,pending=pending[0][0],complete=complete[0][0])
 
 @app.route('/signup')
 def signup():
