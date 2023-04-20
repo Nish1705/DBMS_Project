@@ -1,4 +1,4 @@
-{% extends 'donordash.html' %} {% block main %}
+{% extends 'index.html' %} {% block main %}
 
 <!DOCTYPE html>
 <html>
@@ -19,9 +19,9 @@
         padding-top: 50px;
         margin: 60px;
         margin-right: 600px;
-        margin-left: 120px;
+        margin-left: 90px;
         margin-bottom: 250px;
-        margin-top: 60px;
+        margin-top: 61px;
         background-color: #fff;
         border-radius: 5px;
         box-shadow: 30px 20px 10px rgba(0, 0, 0, 0.1);
@@ -58,6 +58,7 @@
       <table>
         <thead>
           <tr>
+            <th>Donor Username</th>
             <th>Date</th>
             <th>Title</th>
             <th>Food Category</th>
@@ -67,6 +68,7 @@
         <tbody>
           {% for rec in record %}
           <tr>
+            <td>{{rec[4]}}</td>
             <td>{{rec[3]}}</td>
             <td>{{rec[0]}}</td>
             <td>{{rec[2]}}</td>

@@ -1,9 +1,9 @@
-{% extends 'donordash.html' %} {% block main %}
+{% extends 'index.html' %} {% block main %}
 
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Donations | Admin Dashboard</title>
+    <title>Requests | Admin Dashboard</title>
     <style>
       /* Styling for the page */
       body {
@@ -19,9 +19,8 @@
         padding-top: 50px;
         margin: 60px;
         margin-right: 600px;
-        margin-left: 120px;
         margin-bottom: 250px;
-        margin-top: 60px;
+        margin-top: 10px;
         background-color: #fff;
         border-radius: 5px;
         box-shadow: 30px 20px 10px rgba(0, 0, 0, 0.1);
@@ -54,23 +53,27 @@
   </head>
   <body>
     <div class="container">
-      <h1>Donations</h1>
+      <h1>Requests</h1>
       <table>
         <thead>
           <tr>
+            <th>Recipient Username</th>
             <th>Date</th>
             <th>Title</th>
             <th>Food Category</th>
             <th>Quantity</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
           {% for rec in record %}
           <tr>
+            <td>{{rec[4]}}</td>
             <td>{{rec[3]}}</td>
             <td>{{rec[0]}}</td>
             <td>{{rec[2]}}</td>
             <td>{{rec[1]}}</td>
+            <td>{{rec[5]}}</td>
         
           </tr>
           {% endfor %}

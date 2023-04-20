@@ -10,7 +10,7 @@
       crossorigin="anonymous"
     />
 
-    <title>All Users | Admin Dashboard</title>
+    <title>Inventory | Admin Dashboard</title>
     <style>
       /* Styling for the page */
       body {
@@ -24,11 +24,14 @@
         margin: 0 auto;
         padding: 90px;
         padding-top: 50px;
+        padding-right: 150px;
+        padding-left: 150px;
+        padding-bottom: 100px;
         margin: 60px;
-        margin-right: 268px;
-        margin-left: 150px;
+        margin-right: 300px;
+        margin-left: 225px;
         margin-bottom: 200px;
-        margin-top: 10px;
+        margin-top: 70px;
         background-color: #fff;
         border-radius: 5px;
         box-shadow: 30px 20px 10px rgba(0, 0, 0, 0.1);
@@ -44,11 +47,12 @@
         width: 100%;
         border-collapse: collapse;
         margin: 0;
+        margin-top: 7%;
       }
       th,
       td {
         padding: 10px;
-        text-align: left;
+        text-align: center;
         border-bottom: 1px solid #ddd;
       }
       th {
@@ -67,25 +71,23 @@
   <body>
     <div class="container">
       <h1>
-        All Users
+        Inventory
       </h1>
       <table>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Password</th>
-            <th>Email</th>
-            <th>Type</th>
+            <th>Food Category</th>
+            <th>Quantity</th>
+
           </tr>
         </thead>
         <tbody>
           {% for row in record %}
 
           <tr>
+            <td>{{row[0].capitalize()}}</td>
             <td>{{row[1]}}</td>
-            <td>{{row[2]}}</td>
-            <td>{{row[3]}}</td>
-            <td>{{row[4]}}</td>
+
 
 
 

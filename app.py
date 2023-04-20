@@ -639,9 +639,24 @@ def editdonorprofile():
 
 '''Donation section begins'''
 
-@app.route('/donations')
-def donations():
-    return render_template('donations.html')
+@app.route('/donations/<string:username>')
+def my_donations(username):
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT  title, quantity, food_category, donation_date FROM donations WHERE username = %s;",(username,))
+    record = cur.fetchall()
+    cur.close()
+    return render_template('donations.html',record=record, username=username)
+
+@app.route('/all_donations/')
+def all_donations():
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT  title, quantity, food_category, donation_date,username FROM donations")
+    record = cur.fetchall()
+    cur.close()
+    return render_template('all_donations.html',record=record)
+
 
 
 @app.route('/add_donation/<string:username_>')
@@ -677,8 +692,40 @@ def insertdonation(username):
 
         return render_template('donordash.html',username=username)
 
+
+
+
+
 '''Donation section ends'''
 '''Request Section Starts'''
+
+
+@app.route('/requests/<string:username>')
+def my_requests(username):
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT  title, quantity, food_category, request_date,username,status FROM requests WHERE username = %s;",(username,))
+    record = cur.fetchall()
+    cur.close()
+
+    return render_template('requests.html',record=record, username=username)
+
+@app.route('/all_requests')
+def all_requests():
+    
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT  title, quantity, food_category, request_date,username,status FROM requests")
+    record = cur.fetchall()
+    cur.close()
+
+    return render_template('all_requests.html',record=record)
+
+
+
+
+
+
+
 
 @app.route('/add_requests/<string:username_>')
 def add_requests(username_):
@@ -744,6 +791,16 @@ def allusers():
     cur.close()
 
     return render_template('allusers.html',record=record)
+
+@app.route('/Inventory',methods=['GET','POST'])
+def inventory():
+    cur = mysql.connection.cursor()
+    cur.execute("select * from food_items")
+    record = cur.fetchall()
+    cur.close()
+
+    return render_template('inventory.html',record=record)
+
 
 if __name__ == '__main__':
     hehe=True
