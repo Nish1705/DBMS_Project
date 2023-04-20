@@ -95,10 +95,12 @@ def registration():
 def home():
     cur = mysql.connection.cursor()
     cur.execute("create database if not exists `user`")
-    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
-    cur.execute("create table if not exists `logs` (`username` varchar(20) , `password` varchar(20) not null, `type` varchar(30))")
-    cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null unique, `email` varchar(30), `type` varchar(30))")
     cur.execute("create table if not exists `donors` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `recipients` (`name` varchar(30) not null, `address` varchar(30) not null, `email` varchar(30) unique not null, `contact` varchar(10) not null, `type` varchar(30) not null, `username` varchar(20) primary key, `password` varchar(20) not null)")
+    cur.execute("create table if not exists `all_users` (`user_id` int AUTO_INCREMENT primary key, `username` varchar(20) not null unique, `password` varchar(20) not null, `email` varchar(30) unique, `type` varchar(30))")
+    mysql.connection.commit()
+    cur.execute("create table if not exists `logs` (`username` varchar(20) , `password` varchar(20) not null, `type` varchar(30),`login_date` DATE DEFAULT CURRENT_DATE())")
+
     cur.execute("create table if not exists food_items (food_category varchar(20) primary key, quantity int check (quantity <= 100))")
     sql_requests = '''CREATE TABLE IF NOT EXISTS `requests` (
                       request_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -206,18 +208,14 @@ def home():
     mysql.connection.commit()
 
     sql_before_insert_requests = '''
-    CREATE TRIGGER IF NOT EXISTS before_insert_requests
-    BEFORE INSERT ON requests
-    FOR EACH ROW
-    BEGIN
-        DECLARE total_qty INT;
-        SELECT quantity INTO total_qty FROM food_items WHERE food_category = NEW.food_category;
-        IF (NEW.quantity >= total_qty) THEN
-            SET NEW.status = 'Pending';
-        ELSE
-            SET NEW.status = 'Completed';
-        END IF;
-    END;
+CREATE OR REPLACE TRIGGER `before_insert_requests_trigger` BEFORE INSERT ON `requests`
+ FOR EACH ROW BEGIN
+    DECLARE request_status VARCHAR(20);
+    
+    SET request_status = check_request_status(NEW.food_category, NEW.quantity);
+    
+    SET NEW.status = request_status;
+END
 '''
     cur.execute(sql_before_insert_requests)
     mysql.connection.commit()
@@ -240,8 +238,8 @@ BEGIN
   DECLARE foodCat VARCHAR(20);
   DECLARE requestedQuantity INT;
   DECLARE foodQuantity INT;
-  
-  DECLARE cur CURSOR FOR SELECT food_category, quantity FROM requests;
+  DECLARE id INT;
+  DECLARE cur CURSOR FOR SELECT request_id,food_category, quantity FROM requests WHERE status <> 'Completed';
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
   
   START TRANSACTION;
@@ -250,7 +248,7 @@ BEGIN
   OPEN cur;
   
   read_loop: LOOP
-    FETCH cur INTO foodCat,requestedQuantity;
+    FETCH cur INTO id,foodCat,requestedQuantity;
     IF done THEN
       LEAVE read_loop;
     END IF;
@@ -260,10 +258,11 @@ BEGIN
    
     IF foodQuantity >= requestedQuantity THEN
       UPDATE food_items SET quantity = foodQuantity - requestedQuantity WHERE food_category = foodCat;
-      UPDATE requests SET status = 'Completed' WHERE food_category = foodCat;
+      UPDATE requests SET status = 'Completed' WHERE food_category = foodCat AND request_id=id;
+      
     ELSE
 
-      UPDATE requests SET status = 'Pending' WHERE food_category = foodCat;
+      UPDATE requests SET status = 'Pending' WHERE food_category = foodCat AND request_id=id;
     END IF;
   END LOOP;
   
@@ -275,6 +274,26 @@ END
     cur.execute(procedure1)
     mysql.connection.commit()
 
+    function1 = '''
+CREATE OR REPLACE FUNCTION `check_request_status`(p_food_category VARCHAR(255), p_quantity INT) RETURNS varchar(20) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+BEGIN
+    DECLARE total_qty INT;
+    DECLARE request_status VARCHAR(20);
+    
+    SELECT quantity INTO total_qty FROM food_items WHERE food_category = p_food_category;
+    
+    IF (p_quantity >= total_qty) THEN
+        SET request_status = 'Pending';
+    ELSE
+        SET request_status = 'Completed';
+        UPDATE food_items SET quantity = total_qty - p_quantity WHERE food_category = p_food_category;
+    END IF;
+    
+    RETURN request_status;
+END
+    '''
+    cur.execute(function1)
+    mysql.connection.commit()
 
     cur.close()
     return render_template('Landing.html')
@@ -534,10 +553,9 @@ def insertdonor():
 
         if(flag==False):
             if(sameemail):
-                flash("You have already an existing account by this email! ")
-                flash("Try logging in or use another email! ")
-            else:
+                flash("You have already an existing account by this email! Try logging in or use another email!")
 
+            else:
                 cur.execute("INSERT INTO `donors` (name,address,email,contact,type,username, password) VALUES (%s, %s, %s, %s,%s, %s, %s)",(name,address,email,contact,type,username,password))
                 
         else:
@@ -649,7 +667,9 @@ def insertdonation(username):
         try:
 
             sql_query = '''insert into `donations` (username, food_category, quantity, title, description, pickup, remarks) values (%s, %s, %s, %s, %s, %s, %s)'''
+        
             cur.execute(sql_query, (username, food_cat, quant, title, description, pickup, remarks))
+            cur.execute("CALL process_requests();")
             mysql.connection.commit()
             cur.close()
         except Exception as e:
@@ -726,4 +746,5 @@ def allusers():
     return render_template('allusers.html',record=record)
 
 if __name__ == '__main__':
+    hehe=True
     app.run(debug = True)
