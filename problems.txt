@@ -1,3 +1,0 @@
-1. After registration is done we should be redirected to Login currently we are at registerRes.
-2. Username, password, email_id fields are currently allowed to be empty.
-3. All tables should be created at first so that no errors occur when user logs in without registration
